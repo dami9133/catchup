@@ -25,7 +25,8 @@ export async function getGoogleSheet(tabName: string) {
     }
 
     // privateKey의 줄바꿈 문자를 실제 줄바꿈으로 치환 (Vercel 환경 변수 대응)
-    const formattedPrivateKey = privateKey?.replace(/\\n/g, '\n');
+    // 쌍따옴표로 묶여있을 수 있으니 쌍따옴표 제거 로직 추가
+    const formattedPrivateKey = privateKey?.replace(/^"|"$/g, '').replace(/\\n/g, '\n');
 
     // JWT 인증 객체 생성
     const serviceAccountAuth = new JWT({
