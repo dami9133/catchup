@@ -30,7 +30,7 @@ export async function GET(request: Request) {
         next: { revalidate: 3600 } // Next.js 캐싱 (1시간)
       });
       const data = await response.json();
-      if (data.success && data.vlogs) {
+      if (data.success && data.vlogs && data.vlogs.length > 0) {
         vlogs = data.vlogs;
       } else {
         vlogs = MOCK_VLOGS;
