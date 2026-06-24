@@ -26,6 +26,7 @@ export default function CommunityPage() {
   const [startupData, setStartupData] = useState<StartupCampItem[]>([]);
   const [isLoadingStartup, setIsLoadingStartup] = useState(false);
   const [startupError, setStartupError] = useState<string | null>(null);
+  const [selectedStartup, setSelectedStartup] = useState<StartupCampItem | null>(null);
 
   useEffect(() => {
     if (activeTab === 'startupCamp' && startupData.length === 0) {
@@ -50,7 +51,7 @@ export default function CommunityPage() {
   }, [activeTab]);
 
   return (
-    <main className="min-h-full pb-20 bg-background flex flex-col">
+    <main className="min-h-full pb-20 bg-background flex flex-col relative">
       <header className="p-6 pb-2">
         <h1 className="text-2xl font-bold text-white mb-6">커뮤니티</h1>
         
@@ -108,12 +109,10 @@ export default function CommunityPage() {
             ) : (
               <div className="space-y-4">
                 {startupData.map((item) => (
-                  <a 
+                  <button 
                     key={item.id} 
-                    href={item.url || '#'} 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="block p-5 bg-slate-800/40 hover:bg-slate-800/80 rounded-2xl border border-slate-700 hover:border-primary/50 transition-all group"
+                    onClick={() => setSelectedStartup(item)}
+                    className="w-full text-left p-5 bg-slate-800/40 hover:bg-slate-800/80 rounded-2xl border border-slate-700 hover:border-primary/50 transition-all group block"
                   >
                     <div className="flex justify-between items-start mb-2">
                       <span className="px-2.5 py-1 bg-emerald-500/10 text-emerald-400 text-[10px] font-bold rounded-lg border border-emerald-500/20">
@@ -129,7 +128,7 @@ export default function CommunityPage() {
                     <div className="flex items-center text-xs text-slate-400">
                       <span className="truncate">🏢 {item.agency}</span>
                     </div>
-                  </a>
+                  </button>
                 ))}
               </div>
             )}
@@ -154,6 +153,57 @@ export default function CommunityPage() {
         <button className="fixed bottom-20 right-4 w-12 h-12 bg-primary hover:bg-primary-hover text-white rounded-full flex items-center justify-center shadow-lg shadow-primary/20 transition-transform active:scale-95 z-40 max-w-[480px] md:right-auto md:ml-[390px]">
           <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4"></path></svg>
         </button>
+      )}
+
+      {/* 창업지원 공고 상세 모달 */}
+      {selectedStartup && (
+        <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm p-0 sm:p-4 animate-in fade-in duration-200">
+          <div className="bg-slate-900 border-t border-slate-700 sm:border rounded-t-3xl sm:rounded-2xl w-full max-w-[480px] sm:max-w-sm max-h-[85vh] overflow-y-auto relative shadow-2xl animate-in slide-in-from-bottom duration-300">
+            <div className="sticky top-0 bg-slate-900/90 backdrop-blur pb-4 pt-6 px-6 border-b border-slate-800 z-10 flex justify-between items-start">
+              <div className="pr-4">
+                <span className="inline-block px-2.5 py-1 bg-emerald-500/20 text-emerald-400 text-[10px] font-bold rounded-lg border border-emerald-500/30 mb-3">
+                  {selectedStartup.category}
+                </span>
+                <h3 className="text-xl font-bold text-white leading-tight">{selectedStartup.title}</h3>
+              </div>
+              <button onClick={() => setSelectedStartup(null)} className="w-8 h-8 shrink-0 bg-slate-800 rounded-full flex items-center justify-center text-slate-400 hover:text-white transition-colors">✕</button>
+            </div>
+            
+            <div className="p-6">
+              <ul className="space-y-6 text-sm">
+                <li>
+                  <span className="block text-slate-500 mb-2 text-xs font-bold uppercase">주관 기관</span>
+                  <span className="text-slate-200 leading-relaxed bg-slate-800/50 p-3 rounded-lg block font-medium flex items-center gap-2">
+                    <span className="text-lg">🏢</span> {selectedStartup.agency}
+                  </span>
+                </li>
+                <li>
+                  <span className="block text-slate-500 mb-2 text-xs font-bold uppercase">마감일</span>
+                  <span className="text-primary font-bold text-lg bg-primary/10 p-3 rounded-lg block border border-primary/20 flex items-center gap-2">
+                    <span className="text-lg">⏰</span> {selectedStartup.endDate}
+                  </span>
+                </li>
+              </ul>
+              
+              <div className="mt-8 space-y-3">
+                <a 
+                  href={selectedStartup.url && selectedStartup.url !== '#' ? selectedStartup.url : `https://www.k-startup.go.kr`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="block w-full py-4 bg-primary hover:bg-primary-hover text-white text-center font-bold rounded-xl transition-colors shadow-lg shadow-primary/20"
+                >
+                  🔗 원문 보러가기 (공식 홈페이지)
+                </a>
+                <button 
+                  onClick={() => setSelectedStartup(null)} 
+                  className="w-full py-4 bg-slate-800 hover:bg-slate-700 text-white font-bold rounded-xl transition-colors"
+                >
+                  닫기
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
       )}
     </main>
   );

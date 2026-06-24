@@ -9,6 +9,7 @@ export default function DashboardPage() {
   const [isSubscribed, setIsSubscribed] = useState(false);
   const [activeCategory, setActiveCategory] = useState<JobCategory>('recommended');
   const [selectedJob, setSelectedJob] = useState<any>(null);
+  const [selectedVlogId, setSelectedVlogId] = useState<string | null>(null);
 
   const handleSubscribe = () => {
     setIsSubscribed(true);
@@ -59,9 +60,9 @@ export default function DashboardPage() {
   };
 
   const VLOGS = [
-    { id: 1, title: '3년차 퍼포먼스 마케터의 현실', tag: '추천 직업', isPremium: true },
-    { id: 2, title: '네카라쿠배 프론트엔드 하루', tag: '인기 직업', isPremium: true },
-    { id: 3, title: 'UI 디자이너 포트폴리오 피드백', tag: '관련 직업', isPremium: false },
+    { id: 1, title: '3년차 퍼포먼스 마케터의 현실', tag: '추천 직업', isPremium: true, youtubeId: 'Yv28V-Jm6yE' },
+    { id: 2, title: '네카라쿠배 프론트엔드 하루', tag: '인기 직업', isPremium: true, youtubeId: 'r5B92p7-Tck' },
+    { id: 3, title: 'UI 디자이너 포트폴리오 피드백', tag: '관련 직업', isPremium: false, youtubeId: 'n0D1g8n3FvM' },
   ];
 
   const TRENDING_JOBS = ['데이터 분석가', 'AI 프롬프트 엔지니어', '그로스 해커'];
@@ -149,11 +150,12 @@ export default function DashboardPage() {
             {VLOGS.map((vlog) => (
               <div 
                 key={vlog.id} 
-                onClick={() => (!isSubscribed && vlog.isPremium) ? setShowPremiumModal(true) : alert('영상이 재생됩니다.')}
+                onClick={() => (!isSubscribed && vlog.isPremium) ? setShowPremiumModal(true) : setSelectedVlogId(vlog.youtubeId)}
                 className="min-w-[240px] h-36 bg-slate-800 rounded-xl relative overflow-hidden flex-shrink-0 snap-center cursor-pointer group border border-slate-700"
+                style={{ backgroundImage: `url(https://img.youtube.com/vi/${vlog.youtubeId}/mqdefault.jpg)`, backgroundSize: 'cover', backgroundPosition: 'center' }}
               >
                 {(!isSubscribed && vlog.isPremium) ? (
-                  <div className="absolute inset-0 bg-black/60 backdrop-blur-[2px] flex items-center justify-center group-hover:bg-black/70 transition-colors z-10">
+                  <div className="absolute inset-0 bg-black/70 backdrop-blur-[4px] flex items-center justify-center group-hover:bg-black/80 transition-colors z-10">
                     <div className="flex flex-col items-center">
                       <span className="text-3xl mb-2">🔒</span>
                       <span className="bg-gradient-to-r from-yellow-500 to-amber-500 text-black text-xs font-bold px-3 py-1 rounded-full uppercase shadow-lg shadow-yellow-500/20">Premium Unlock</span>
@@ -161,15 +163,15 @@ export default function DashboardPage() {
                   </div>
                 ) : (
                   <div className="absolute inset-0 flex items-center justify-center z-10 opacity-0 group-hover:opacity-100 transition-opacity bg-black/40">
-                    <span className="w-12 h-12 bg-primary/90 rounded-full flex items-center justify-center text-white pl-1 shadow-lg">▶</span>
+                    <span className="w-12 h-12 bg-primary/90 rounded-full flex items-center justify-center text-white pl-1 shadow-lg shadow-primary/30">▶</span>
                   </div>
                 )}
-                <div className={`absolute inset-0 bg-gradient-to-t from-slate-900 to-transparent z-0 ${(!isSubscribed && vlog.isPremium) ? 'blur-sm' : ''}`}></div>
+                <div className={`absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent z-0 ${(!isSubscribed && vlog.isPremium) ? 'blur-sm' : ''}`}></div>
                 <div className="absolute top-2 right-2 z-0">
                   <span className="bg-slate-900/80 text-emerald-400 text-[10px] font-bold px-2 py-1 rounded border border-emerald-400/30">{vlog.tag}</span>
                 </div>
                 <div className={`absolute bottom-3 left-3 right-3 z-0 ${(!isSubscribed && vlog.isPremium) ? 'blur-[3px]' : ''}`}>
-                  <p className="text-white text-sm font-medium line-clamp-2 leading-snug">{vlog.title}</p>
+                  <p className="text-white text-sm font-bold line-clamp-2 leading-snug drop-shadow-md">{vlog.title}</p>
                 </div>
               </div>
             ))}
@@ -181,14 +183,58 @@ export default function DashboardPage() {
           <h2 className="text-white font-bold mb-3 flex items-center gap-2">
             <span>🗺️</span> 시크릿 합격 로드맵
           </h2>
-          <div className="relative h-48 bg-slate-800 rounded-xl border border-slate-700 overflow-hidden">
-            <div className={`absolute inset-0 p-5 ${!isSubscribed ? 'filter blur-[6px] opacity-40' : 'bg-gradient-to-br from-slate-800 to-slate-900'}`}>
-              <h3 className="text-white font-bold mb-4">비전공자 네카라쿠배 합격 커리큘럼</h3>
-              <div className="space-y-3">
-                <div className="flex items-center gap-3"><div className="w-6 h-6 rounded-full bg-emerald-500 text-xs flex items-center justify-center font-bold">1</div><div className="h-4 bg-slate-600 rounded w-2/3"></div></div>
-                <div className="flex items-center gap-3"><div className="w-6 h-6 rounded-full bg-emerald-500 text-xs flex items-center justify-center font-bold">2</div><div className="h-4 bg-slate-600 rounded w-3/4"></div></div>
-                <div className="flex items-center gap-3"><div className="w-6 h-6 rounded-full bg-emerald-500 text-xs flex items-center justify-center font-bold">3</div><div className="h-4 bg-slate-600 rounded w-1/2"></div></div>
-              </div>
+          <div className="relative bg-slate-800 rounded-xl border border-slate-700 overflow-hidden">
+            <div className={`p-5 ${!isSubscribed ? 'h-48 filter blur-[6px] opacity-40 overflow-hidden' : 'bg-gradient-to-br from-slate-800 to-slate-900'}`}>
+              <h3 className="text-white font-bold mb-4">비전공자 프론트엔드 네카라쿠배 합격 커리큘럼</h3>
+              
+              {!isSubscribed ? (
+                // 구독 전: 흐릿한 바 형태의 목업
+                <div className="space-y-3">
+                  <div className="flex items-center gap-3"><div className="w-6 h-6 rounded-full bg-emerald-500 text-xs flex items-center justify-center font-bold">1</div><div className="h-4 bg-slate-600 rounded w-2/3"></div></div>
+                  <div className="flex items-center gap-3"><div className="w-6 h-6 rounded-full bg-emerald-500 text-xs flex items-center justify-center font-bold">2</div><div className="h-4 bg-slate-600 rounded w-3/4"></div></div>
+                  <div className="flex items-center gap-3"><div className="w-6 h-6 rounded-full bg-emerald-500 text-xs flex items-center justify-center font-bold">3</div><div className="h-4 bg-slate-600 rounded w-1/2"></div></div>
+                </div>
+              ) : (
+                // 구독 후: 실제 커리큘럼 표시
+                <div className="space-y-4 relative before:absolute before:inset-0 before:ml-3 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-slate-700 before:to-transparent">
+                  <div className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
+                    <div className="flex items-center justify-center w-6 h-6 rounded-full bg-emerald-500 shadow shrink-0 z-10 text-[10px] font-bold text-slate-900">1</div>
+                    <div className="w-[calc(100%-2.5rem)] md:w-[calc(50%-2.5rem)] p-3 rounded border border-slate-700 bg-slate-800/80 shadow">
+                      <div className="flex items-center justify-between space-x-2 mb-1">
+                        <div className="font-bold text-slate-200 text-sm">CS 기초 및 JS 딥다이브</div>
+                      </div>
+                      <div className="text-xs text-slate-400">네트워크, 브라우저 렌더링, JS 실행 컨텍스트 완벽 이해 (모던 자바스크립트 딥다이브 3회독)</div>
+                    </div>
+                  </div>
+                  <div className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
+                    <div className="flex items-center justify-center w-6 h-6 rounded-full bg-emerald-500 shadow shrink-0 z-10 text-[10px] font-bold text-slate-900">2</div>
+                    <div className="w-[calc(100%-2.5rem)] md:w-[calc(50%-2.5rem)] p-3 rounded border border-slate-700 bg-slate-800/80 shadow">
+                      <div className="flex items-center justify-between space-x-2 mb-1">
+                        <div className="font-bold text-slate-200 text-sm">React 고급 패턴 & 상태 관리</div>
+                      </div>
+                      <div className="text-xs text-slate-400">Context API, Zustand, React Query를 활용한 복잡한 상태 분리 및 렌더링 최적화 훈련</div>
+                    </div>
+                  </div>
+                  <div className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
+                    <div className="flex items-center justify-center w-6 h-6 rounded-full bg-emerald-500 shadow shrink-0 z-10 text-[10px] font-bold text-slate-900">3</div>
+                    <div className="w-[calc(100%-2.5rem)] md:w-[calc(50%-2.5rem)] p-3 rounded border border-slate-700 bg-slate-800/80 shadow">
+                      <div className="flex items-center justify-between space-x-2 mb-1">
+                        <div className="font-bold text-slate-200 text-sm">성능 최적화 중심 프로젝트</div>
+                      </div>
+                      <div className="text-xs text-slate-400">Lighthouse 95점 이상 목표. 무한 스크롤, 디바운스/쓰로틀링, 이미지 레이지 로딩 적용 필수</div>
+                    </div>
+                  </div>
+                  <div className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
+                    <div className="flex items-center justify-center w-6 h-6 rounded-full bg-emerald-500 shadow shrink-0 z-10 text-[10px] font-bold text-slate-900">4</div>
+                    <div className="w-[calc(100%-2.5rem)] md:w-[calc(50%-2.5rem)] p-3 rounded border border-slate-700 bg-slate-800/80 shadow">
+                      <div className="flex items-center justify-between space-x-2 mb-1">
+                        <div className="font-bold text-slate-200 text-sm">알고리즘 코딩테스트 집중</div>
+                      </div>
+                      <div className="text-xs text-slate-400">프로그래머스 레벨2~3 필수 유형(구현, DFS/BFS, 투포인터) 하루 2문제씩 풀이 및 리뷰</div>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
             
             {!isSubscribed && (
@@ -220,6 +266,27 @@ export default function DashboardPage() {
               >
                 지금 바로 구독하기
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 유튜브 영상 모달 */}
+      {selectedVlogId && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-in fade-in duration-200">
+          <div className="bg-slate-900 border border-slate-700 rounded-2xl w-full max-w-3xl overflow-hidden relative shadow-2xl">
+            <div className="flex justify-end p-2 bg-slate-900">
+              <button onClick={() => setSelectedVlogId(null)} className="w-8 h-8 rounded-full flex items-center justify-center text-slate-400 hover:text-white hover:bg-slate-800 transition-colors">✕</button>
+            </div>
+            <div className="relative w-full pb-[56.25%] bg-black">
+              <iframe 
+                className="absolute top-0 left-0 w-full h-full"
+                src={`https://www.youtube.com/embed/${selectedVlogId}?autoplay=1`} 
+                title="YouTube video player" 
+                frameBorder="0" 
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                allowFullScreen
+              ></iframe>
             </div>
           </div>
         </div>

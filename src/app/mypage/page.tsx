@@ -9,6 +9,17 @@ export default function MyPage() {
   const [questExp, setQuestExp] = useState(0);
   const [questState, setQuestState] = useState<QuestState>('idle');
   const [showVerifyModal, setShowVerifyModal] = useState(false);
+  const [activeQuestIndex, setActiveQuestIndex] = useState(0);
+  const [uploadedFileName, setUploadedFileName] = useState<string | null>(null);
+
+  const QUESTS = [
+    { id: 1, title: '내 직무와 관련된 최신 아티클 1개 읽고 요약하기', reward: 50 },
+    { id: 2, title: '관심 기업 채용 공고 스크랩 3개 하기', reward: 100 },
+    { id: 3, title: '이력서 초안 1장 분량 작성하기', reward: 150 },
+    { id: 4, title: '모의 면접 1회 진행 및 녹화하기', reward: 200 },
+  ];
+
+  const currentQuest = QUESTS[activeQuestIndex] || null;
 
   const handleStartQuest = () => {
     setQuestState('in_progress');
@@ -16,16 +27,39 @@ export default function MyPage() {
 
   const handleVerifyClick = () => {
     setShowVerifyModal(true);
+    setUploadedFileName(null);
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      setUploadedFileName(e.target.files[0].name);
+    }
   };
 
   const handleVerifySubmit = () => {
+    if (!uploadedFileName) {
+      alert('사진이나 관련 자료를 먼저 첨부해주세요!');
+      return;
+    }
+    
     setShowVerifyModal(false);
     setQuestState('completed');
-    setQuestExp(prev => prev + 50);
+    
+    if (currentQuest) {
+      setQuestExp(prev => Math.min(prev + currentQuest.reward, 500));
+    }
+
+    // 2초 뒤에 다음 퀘스트로 넘어감
+    setTimeout(() => {
+      if (activeQuestIndex < QUESTS.length - 1) {
+        setActiveQuestIndex(prev => prev + 1);
+        setQuestState('idle');
+      }
+    }, 2000);
   };
 
   return (
-    <main className="min-h-full pb-20 bg-background flex flex-col p-6 overflow-y-auto">
+    <main className="min-h-full pb-20 bg-background flex flex-col p-6 overflow-y-auto relative">
       <header className="mb-6 flex justify-between items-center">
         <h1 className="text-2xl font-bold text-white">마이페이지</h1>
         <span className="bg-slate-800 text-slate-300 text-xs px-3 py-1 rounded-full border border-slate-700">Free 플랜</span>
@@ -47,7 +81,7 @@ export default function MyPage() {
       <section className="mb-8">
         <div className="flex justify-between items-end mb-4">
           <h2 className="text-white font-bold flex items-center gap-2">
-            <span>🎯</span> 주간 퀘스트
+            <span>🎯</span> 커리어 성장 퀘스트
           </h2>
           <div className="text-right">
             <p className="text-xs text-slate-400 mb-1">현재 EXP</p>
@@ -63,36 +97,50 @@ export default function MyPage() {
           ></div>
         </div>
 
-        <div className="bg-slate-800/50 rounded-xl p-4 border border-slate-700 flex justify-between items-center shadow-inner">
-          <div>
-            <p className="text-white font-medium">마케팅 관련 아티클 읽고 요약하기</p>
-            <p className="text-xs text-slate-400 mt-1">보상: 50 EXP</p>
+        {currentQuest ? (
+          <div className="bg-slate-800/50 rounded-xl p-4 border border-slate-700 flex justify-between items-center shadow-inner relative overflow-hidden">
+            {questState === 'completed' && (
+              <div className="absolute inset-0 bg-emerald-500/20 backdrop-blur-[1px] flex items-center justify-center z-10 animate-in fade-in duration-300">
+                <span className="text-emerald-400 font-bold flex items-center gap-2 text-lg">
+                  <span className="text-2xl">✨</span> 퀘스트 완료! 다음 퀘스트 준비 중...
+                </span>
+              </div>
+            )}
+            <div>
+              <div className="flex items-center gap-2 mb-1">
+                <span className="text-xs font-bold text-slate-400 bg-slate-800 px-2 py-0.5 rounded">STEP {activeQuestIndex + 1}</span>
+              </div>
+              <p className="text-white font-medium pr-2">{currentQuest.title}</p>
+              <p className="text-xs text-primary mt-1 font-bold">보상: {currentQuest.reward} EXP</p>
+            </div>
+            
+            <div className="flex-shrink-0 relative z-20">
+              {questState === 'idle' && (
+                <button 
+                  onClick={handleStartQuest}
+                  className="bg-primary hover:bg-primary-hover text-white text-sm px-4 py-2 rounded-lg font-medium transition-colors whitespace-nowrap"
+                >
+                  시작하기
+                </button>
+              )}
+
+              {questState === 'in_progress' && (
+                <button 
+                  onClick={handleVerifyClick}
+                  className="bg-blue-500 hover:bg-blue-600 text-white text-sm px-4 py-2 rounded-lg font-bold transition-colors shadow-lg shadow-blue-500/20 animate-pulse whitespace-nowrap"
+                >
+                  인증하기
+                </button>
+              )}
+            </div>
           </div>
-          
-          {questState === 'idle' && (
-            <button 
-              onClick={handleStartQuest}
-              className="bg-primary hover:bg-primary-hover text-white text-sm px-4 py-2 rounded-lg font-medium transition-colors whitespace-nowrap"
-            >
-              시작하기
-            </button>
-          )}
-
-          {questState === 'in_progress' && (
-            <button 
-              onClick={handleVerifyClick}
-              className="bg-blue-500 hover:bg-blue-600 text-white text-sm px-4 py-2 rounded-lg font-bold transition-colors shadow-lg shadow-blue-500/20 animate-pulse whitespace-nowrap"
-            >
-              인증하기
-            </button>
-          )}
-
-          {questState === 'completed' && (
-            <span className="text-emerald-400 text-sm font-bold bg-emerald-400/10 px-3 py-1.5 rounded-lg border border-emerald-400/20 whitespace-nowrap">
-              완료! (+50)
-            </span>
-          )}
-        </div>
+        ) : (
+          <div className="bg-slate-800/50 rounded-xl p-6 border border-slate-700 text-center">
+            <span className="text-4xl block mb-2">🏆</span>
+            <p className="text-white font-bold text-lg">모든 퀘스트를 완료했습니다!</p>
+            <p className="text-slate-400 text-sm mt-1">곧 새로운 퀘스트가 추가될 예정입니다.</p>
+          </div>
+        )}
       </section>
 
       {/* 멤버십 관리 영역 */}
@@ -118,16 +166,29 @@ export default function MyPage() {
           <div className="bg-slate-900 border border-slate-700 rounded-2xl w-full max-w-sm p-6 relative shadow-2xl animate-in fade-in zoom-in duration-200">
             <button onClick={() => setShowVerifyModal(false)} className="absolute top-4 right-4 text-slate-400 hover:text-white">✕</button>
             <h2 className="text-xl font-bold text-white mb-2">퀘스트 인증하기</h2>
-            <p className="text-sm text-slate-400 mb-6">마케팅 아티클을 읽고 요약한 노션 링크나 이미지를 업로드해주세요.</p>
+            <p className="text-sm text-slate-400 mb-6">{currentQuest?.title} 미션을 완료한 증빙 사진이나 캡쳐를 업로드해주세요.</p>
             
-            <div className="border-2 border-dashed border-slate-600 rounded-xl p-8 mb-6 flex flex-col items-center justify-center text-slate-500 hover:bg-slate-800 hover:border-slate-500 transition-colors cursor-pointer">
-              <span className="text-3xl mb-2">📸</span>
-              <span className="text-sm font-medium">사진 첨부하기</span>
-            </div>
+            <label className="border-2 border-dashed border-slate-600 rounded-xl p-8 mb-6 flex flex-col items-center justify-center text-slate-500 hover:bg-slate-800 hover:border-slate-500 transition-colors cursor-pointer relative overflow-hidden group">
+              <input type="file" accept="image/*" className="absolute inset-0 opacity-0 cursor-pointer w-full h-full" onChange={handleFileChange} />
+              
+              {uploadedFileName ? (
+                <>
+                  <span className="text-4xl mb-2">✅</span>
+                  <span className="text-emerald-400 font-bold text-center break-all text-sm px-2">{uploadedFileName}</span>
+                  <span className="text-xs text-slate-500 mt-2 group-hover:text-slate-400 transition-colors">클릭하여 다른 파일 선택</span>
+                </>
+              ) : (
+                <>
+                  <span className="text-3xl mb-2">📸</span>
+                  <span className="text-sm font-medium">사진 첨부하기</span>
+                </>
+              )}
+            </label>
 
             <button 
               onClick={handleVerifySubmit}
-              className="w-full py-4 bg-primary hover:bg-primary-hover text-white font-bold rounded-xl transition-transform active:scale-95"
+              className={`w-full py-4 font-bold rounded-xl transition-all ${uploadedFileName ? 'bg-primary hover:bg-primary-hover text-white shadow-lg shadow-primary/20 active:scale-95' : 'bg-slate-800 text-slate-500 cursor-not-allowed'}`}
+              disabled={!uploadedFileName}
             >
               업로드 완료 및 보상받기
             </button>
