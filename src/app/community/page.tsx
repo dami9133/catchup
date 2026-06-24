@@ -1,8 +1,9 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { getStartupData, StartupCampItem } from '@/app/actions/community';
 
-type Tab = 'jobInfo' | 'counseling';
+type Tab = 'jobInfo' | 'counseling' | 'startupCamp';
 
 const MOCK_POSTS = {
   jobInfo: [
@@ -20,6 +21,33 @@ const MOCK_POSTS = {
 
 export default function CommunityPage() {
   const [activeTab, setActiveTab] = useState<Tab>('jobInfo');
+  
+  // 창업지원 데이터 상태
+  const [startupData, setStartupData] = useState<StartupCampItem[]>([]);
+  const [isLoadingStartup, setIsLoadingStartup] = useState(false);
+  const [startupError, setStartupError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (activeTab === 'startupCamp' && startupData.length === 0) {
+      const fetchStartup = async () => {
+        setIsLoadingStartup(true);
+        setStartupError(null);
+        try {
+          const res = await getStartupData();
+          if (res.success && res.data) {
+            setStartupData(res.data);
+          } else {
+            setStartupError(res.message || '데이터를 불러올 수 없습니다.');
+          }
+        } catch (err) {
+          setStartupError('데이터 로드 중 에러가 발생했습니다.');
+        } finally {
+          setIsLoadingStartup(false);
+        }
+      };
+      fetchStartup();
+    }
+  }, [activeTab]);
 
   return (
     <main className="min-h-full pb-20 bg-background flex flex-col">
@@ -27,49 +55,106 @@ export default function CommunityPage() {
         <h1 className="text-2xl font-bold text-white mb-6">커뮤니티</h1>
         
         {/* Tabs */}
-        <div className="flex border-b border-slate-700">
+        <div className="flex border-b border-slate-700 overflow-x-auto whitespace-nowrap hide-scrollbar">
           <button
             onClick={() => setActiveTab('jobInfo')}
-            className={`flex-1 pb-3 text-sm font-bold transition-colors border-b-2 ${
+            className={`px-4 pb-3 text-sm font-bold transition-colors border-b-2 ${
               activeTab === 'jobInfo' 
                 ? 'text-primary border-primary' 
                 : 'text-slate-500 border-transparent hover:text-slate-400'
             }`}
           >
-            취준/이직 정보 공유
+            취준/이직 정보
           </button>
           <button
             onClick={() => setActiveTab('counseling')}
-            className={`flex-1 pb-3 text-sm font-bold transition-colors border-b-2 ${
+            className={`px-4 pb-3 text-sm font-bold transition-colors border-b-2 ${
               activeTab === 'counseling' 
                 ? 'text-primary border-primary' 
                 : 'text-slate-500 border-transparent hover:text-slate-400'
             }`}
           >
-            익명 고민 상담소
+            익명 고민 상담
+          </button>
+          <button
+            onClick={() => setActiveTab('startupCamp')}
+            className={`px-4 pb-3 text-sm font-bold transition-colors border-b-2 ${
+              activeTab === 'startupCamp' 
+                ? 'text-primary border-primary' 
+                : 'text-slate-500 border-transparent hover:text-slate-400'
+            }`}
+          >
+            창업지원 공고 🚀
           </button>
         </div>
       </header>
 
       {/* Post List */}
       <ul className="flex-1 overflow-y-auto">
-        {MOCK_POSTS[activeTab].map((post) => (
-          <li key={post.id} className="border-b border-slate-800/50 hover:bg-slate-800/20 transition-colors cursor-pointer p-5">
-            <h3 className="text-slate-200 font-medium text-base mb-2">{post.title}</h3>
-            <div className="flex items-center text-xs text-slate-500 gap-3">
-              <span>{post.time}</span>
-              <span className="flex items-center gap-1">
-                💬 {post.comments}
-              </span>
-            </div>
-          </li>
-        ))}
+        {activeTab === 'startupCamp' ? (
+          <div className="p-4">
+            {isLoadingStartup ? (
+              <div className="flex justify-center py-10">
+                <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+              </div>
+            ) : startupError ? (
+              <div className="p-6 bg-slate-800/50 rounded-xl text-center border border-slate-700">
+                <p className="text-slate-400 text-sm">{startupError}</p>
+              </div>
+            ) : startupData.length === 0 ? (
+              <div className="p-6 bg-slate-800/50 rounded-xl text-center border border-slate-700">
+                <p className="text-slate-400 text-sm">현재 접수 중인 창업지원 공고가 없습니다.</p>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {startupData.map((item) => (
+                  <a 
+                    key={item.id} 
+                    href={item.url || '#'} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="block p-5 bg-slate-800/40 hover:bg-slate-800/80 rounded-2xl border border-slate-700 hover:border-primary/50 transition-all group"
+                  >
+                    <div className="flex justify-between items-start mb-2">
+                      <span className="px-2.5 py-1 bg-emerald-500/10 text-emerald-400 text-[10px] font-bold rounded-lg border border-emerald-500/20">
+                        {item.category}
+                      </span>
+                      <span className="text-xs font-mono text-slate-500">
+                        마감: {item.endDate}
+                      </span>
+                    </div>
+                    <h3 className="text-white font-bold text-base leading-tight mb-3 group-hover:text-primary transition-colors">
+                      {item.title}
+                    </h3>
+                    <div className="flex items-center text-xs text-slate-400">
+                      <span className="truncate">🏢 {item.agency}</span>
+                    </div>
+                  </a>
+                ))}
+              </div>
+            )}
+          </div>
+        ) : (
+          MOCK_POSTS[activeTab].map((post) => (
+            <li key={post.id} className="border-b border-slate-800/50 hover:bg-slate-800/20 transition-colors cursor-pointer p-5">
+              <h3 className="text-slate-200 font-medium text-base mb-2">{post.title}</h3>
+              <div className="flex items-center text-xs text-slate-500 gap-3">
+                <span>{post.time}</span>
+                <span className="flex items-center gap-1">
+                  💬 {post.comments}
+                </span>
+              </div>
+            </li>
+          ))
+        )}
       </ul>
 
-      {/* FAB (Floating Action Button) */}
-      <button className="fixed bottom-20 right-4 w-12 h-12 bg-primary hover:bg-primary-hover text-white rounded-full flex items-center justify-center shadow-lg shadow-primary/20 transition-transform active:scale-95 z-40 max-w-[480px] md:right-auto md:ml-[390px]">
-        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4"></path></svg>
-      </button>
+      {/* FAB (Floating Action Button) - 공고 탭 아닐때만 표시 */}
+      {activeTab !== 'startupCamp' && (
+        <button className="fixed bottom-20 right-4 w-12 h-12 bg-primary hover:bg-primary-hover text-white rounded-full flex items-center justify-center shadow-lg shadow-primary/20 transition-transform active:scale-95 z-40 max-w-[480px] md:right-auto md:ml-[390px]">
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4"></path></svg>
+        </button>
+      )}
     </main>
   );
 }
