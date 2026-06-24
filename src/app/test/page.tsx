@@ -82,6 +82,9 @@ export default function TestPage() {
       setResultPersona(selectedPersona);
       setIsFinished(true);
 
+      // 로컬 스토리지에 결과 저장하여 전역 상태처럼 활용 (마이페이지/대시보드 연동)
+      localStorage.setItem('userPersona', JSON.stringify(selectedPersona));
+
       // 구글 시트에 업데이트 반영
       const userEmail = localStorage.getItem('userEmail');
       if (userEmail) {

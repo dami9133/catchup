@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 type JobCategory = 'recommended' | 'popular';
 
@@ -9,69 +9,74 @@ export default function DashboardPage() {
   const [isSubscribed, setIsSubscribed] = useState(false);
   const [activeCategory, setActiveCategory] = useState<JobCategory>('recommended');
   const [selectedJob, setSelectedJob] = useState<any>(null);
-  const [selectedVlogId, setSelectedVlogId] = useState<string | null>(null);
+  const [selectedVlogQuery, setSelectedVlogQuery] = useState<string | null>(null);
+  const [userPersona, setUserPersona] = useState<any>(null);
+
+  useEffect(() => {
+    // 저장된 페르소나와 구독 상태 불러오기
+    const savedPersona = localStorage.getItem('userPersona');
+    if (savedPersona) {
+      try {
+        setUserPersona(JSON.parse(savedPersona));
+      } catch (e) {
+        console.error(e);
+      }
+    }
+    const sub = localStorage.getItem('isSubscribed');
+    if (sub === 'true') {
+      setIsSubscribed(true);
+    }
+  }, []);
 
   const handleSubscribe = () => {
     setIsSubscribed(true);
+    localStorage.setItem('isSubscribed', 'true');
     setShowPremiumModal(false);
   };
 
-  const JOB_INFO = {
-    '데이터 분석가': {
-      title: '데이터 분석가',
-      tasks: '데이터 파이프라인 구축, A/B 테스트 검증, 프로덕트 지표(DAU, MAU) 분석 및 인사이트 도출',
-      certs: 'SQLD, ADsP, 정보처리기사',
-      companies: '토스, 당근, 네이버웹툰, 쏘카',
-      satisfaction: '⭐️ 4.5 / 5.0 (비즈니스 임팩트를 낸다는 보람)',
-      salary: '초봉 4,000 ~ 5,000만 원'
-    },
-    'AI 프롬프트 엔지니어': {
-      title: 'AI 프롬프트 엔지니어',
-      tasks: 'LLM 모델 프롬프트 최적화, 파인튜닝 데이터셋 구축, AI 에이전트 워크플로우 설계',
-      certs: '관련 자격증보단 실무 포트폴리오 및 AI 해커톤 입상 우대',
-      companies: '뤼튼, 딥브레인AI, 업스테이지',
-      satisfaction: '⭐️ 4.3 / 5.0 (최신 기술을 다루는 즐거움)',
-      salary: '초봉 4,500 ~ 6,000만 원'
-    },
-    '그로스 해커': {
-      title: '그로스 해커',
-      tasks: '퍼널 분석, 그로스 실험 설계, 퍼포먼스 마케팅 최적화, 바이럴 루프 구축',
-      certs: 'GA4 인증, 검색광고마케터',
-      companies: '오늘의집, 뱅크샐러드, 올웨이즈',
-      satisfaction: '⭐️ 4.2 / 5.0 (빠른 호흡의 성장 경험)',
-      salary: '초봉 3,800 ~ 4,500만 원'
-    },
-    '콘텐츠 마케터': {
-      title: '콘텐츠 마케터',
-      tasks: '브랜드 SNS 채널 운영, 블로그 아티클 작성, 숏폼 콘텐츠 기획 및 제작',
-      certs: '디지털마케팅자격증, 포토샵/프리미어 숙련도',
-      companies: '야놀자, 무신사, 아이디어스',
-      satisfaction: '⭐️ 4.0 / 5.0 (아이디어가 실현되는 즐거움)',
-      salary: '초봉 3,000 ~ 3,600만 원'
-    },
-    'UX/UI 디자이너': {
-      title: 'UX/UI 디자이너',
-      tasks: '사용자 리서치, 와이어프레임 설계, 프로토타이핑, 디자인 시스템 구축',
-      certs: '컬러리스트기사, 시각디자인기사',
-      companies: '토스, 카카오스타일, 오늘의집',
-      satisfaction: '⭐️ 4.1 / 5.0 (창의적 문제 해결 경험)',
-      salary: '초봉 3,200 ~ 3,800만 원'
-    }
+  const JOB_INFO: Record<string, any> = {
+    '데이터 분석가': { title: '데이터 분석가', tasks: '데이터 파이프라인 구축, A/B 테스트 검증, 프로덕트 지표 분석', certs: 'SQLD, ADsP', companies: '토스, 당근, 네이버웹툰', satisfaction: '⭐️ 4.5', salary: '초봉 4,000만 원' },
+    'AI 프롬프트 엔지니어': { title: 'AI 프롬프트 엔지니어', tasks: 'LLM 프롬프트 최적화, 파인튜닝', certs: 'AI 해커톤 입상 우대', companies: '뤼튼, 업스테이지', satisfaction: '⭐️ 4.3', salary: '초봉 4,500만 원' },
+    '그로스 해커': { title: '그로스 해커', tasks: '퍼널 분석, 그로스 실험 설계', certs: 'GA4 인증', companies: '오늘의집, 뱅크샐러드', satisfaction: '⭐️ 4.2', salary: '초봉 3,800만 원' },
+    '콘텐츠 마케터': { title: '콘텐츠 마케터', tasks: '브랜드 SNS 운영, 숏폼 기획', certs: '디지털마케팅자격증', companies: '야놀자, 무신사', satisfaction: '⭐️ 4.0', salary: '초봉 3,000만 원' },
+    'UX/UI 디자이너': { title: 'UX/UI 디자이너', tasks: '사용자 리서치, 와이어프레임 설계', certs: '시각디자인기사', companies: '토스, 카카오스타일', satisfaction: '⭐️ 4.1', salary: '초봉 3,200만 원' }
   };
 
-  const VLOGS = [
-    { id: 1, title: '3년차 퍼포먼스 마케터의 현실', tag: '추천 직업', isPremium: true, youtubeId: 'Yv28V-Jm6yE' },
-    { id: 2, title: '네카라쿠배 프론트엔드 하루', tag: '인기 직업', isPremium: true, youtubeId: 'r5B92p7-Tck' },
-    { id: 3, title: 'UI 디자이너 포트폴리오 피드백', tag: '관련 직업', isPremium: false, youtubeId: 'n0D1g8n3FvM' },
-  ];
+  const fallbackJob = { title: '상세 정보', tasks: '다양한 실무 경험', certs: '관련 포트폴리오', companies: '유망 스타트업', satisfaction: '⭐️ 4.0', salary: '회사 내규에 따름' };
+
+  const getJobInfo = (jobName: string) => JOB_INFO[jobName] || { ...fallbackJob, title: jobName };
 
   const TRENDING_JOBS = ['데이터 분석가', 'AI 프롬프트 엔지니어', '그로스 해커'];
+  
+  // AI 추천 직업 동적 할당
+  const recommendedJobs = userPersona?.jobs || ['콘텐츠 마케터', '그로스 해커'];
+
+  // VLOG 추천 동적 할당 (유튜브 검색 쿼리 사용)
+  const AI_VLOGS = recommendedJobs.map((job: string, idx: number) => ({
+    id: idx + 1,
+    title: `${job}의 하루 브이로그`,
+    tag: idx === 0 ? 'AI 추천' : '관련 직무',
+    isPremium: true,
+    searchQuery: `${job} 브이로그`
+  }));
+  // 무료 샘플 영상 1개 추가
+  AI_VLOGS.push({
+    id: 99,
+    title: '신입 채용 담당자의 꿀팁',
+    tag: '무료 공개',
+    isPremium: false,
+    searchQuery: '스타트업 채용 면접 팁'
+  });
 
   return (
     <main className="min-h-full pb-20 bg-background flex flex-col relative">
       <header className="p-6 pb-4">
-        <h1 className="text-2xl font-bold text-white mb-2">직무 탐색 허브 🧭</h1>
-        <p className="text-sm text-slate-400">요즘 뜨는 직무부터 숨겨진 꿀 직무까지 탐색해보세요.</p>
+        <h1 className="text-2xl font-bold text-white mb-2">
+          {userPersona ? `${userPersona.name}님을 위한 탐색 허브 🧭` : '직무 탐색 허브 🧭'}
+        </h1>
+        <p className="text-sm text-slate-400">
+          {userPersona ? '나의 커리어 성향에 꼭 맞는 직무와 로드맵을 확인하세요.' : '요즘 뜨는 직무부터 숨겨진 꿀 직무까지 탐색해보세요.'}
+        </p>
       </header>
 
       {/* 1. 요새 뜨는 직업 (순위 표기) */}
@@ -83,7 +88,7 @@ export default function DashboardPage() {
           {TRENDING_JOBS.map((job, idx) => (
             <div 
               key={idx} 
-              onClick={() => setSelectedJob(JOB_INFO[job as keyof typeof JOB_INFO])}
+              onClick={() => setSelectedJob(getJobInfo(job))}
               className="bg-slate-800 hover:bg-slate-700 border border-slate-700 hover:border-primary/50 transition-colors rounded-xl p-4 min-w-[150px] snap-center flex-shrink-0 cursor-pointer relative"
             >
               <div className="absolute -top-2 -left-2 w-7 h-7 bg-emerald-500 rounded-full flex items-center justify-center text-white font-bold text-xs shadow-lg shadow-emerald-500/30">
@@ -99,13 +104,12 @@ export default function DashboardPage() {
 
       {/* 2. 추천 직업 / 인기 직업 카테고리화 */}
       <section className="px-6 mb-8">
-        {/* 탭 헤더 */}
         <div className="flex gap-6 border-b border-slate-700 mb-4">
           <button 
             onClick={() => setActiveCategory('recommended')} 
             className={`pb-2 text-base font-bold transition-colors border-b-2 ${activeCategory === 'recommended' ? 'text-primary border-primary' : 'text-slate-500 border-transparent hover:text-slate-400'}`}
           >
-            추천 직업
+            AI 추천 직업
           </button>
           <button 
             onClick={() => setActiveCategory('popular')} 
@@ -115,23 +119,22 @@ export default function DashboardPage() {
           </button>
         </div>
 
-        {/* 직무 리스트 (클릭 시 모달) */}
         <div className="space-y-3">
-          {activeCategory === 'recommended' && ['콘텐츠 마케터', '그로스 해커'].map(job => (
+          {activeCategory === 'recommended' && recommendedJobs.map((job: string) => (
             <div 
               key={job} 
-              onClick={() => setSelectedJob(JOB_INFO[job as keyof typeof JOB_INFO])}
-              className="w-full bg-slate-800/60 hover:bg-slate-800 border border-slate-700 rounded-xl p-4 flex justify-between items-center cursor-pointer transition-colors"
+              onClick={() => setSelectedJob(getJobInfo(job))}
+              className="w-full bg-slate-800/60 hover:bg-slate-800 border border-slate-700 hover:border-primary/50 rounded-xl p-4 flex justify-between items-center cursor-pointer transition-colors"
             >
-              <span className="text-slate-200 font-medium">{job}</span>
+              <span className="text-slate-200 font-medium flex items-center gap-2"><span className="text-emerald-400">✨</span> {job}</span>
               <span className="text-slate-500 text-xs">상세 보기 &gt;</span>
             </div>
           ))}
           {activeCategory === 'popular' && ['데이터 분석가', 'AI 프롬프트 엔지니어', 'UX/UI 디자이너'].map(job => (
             <div 
               key={job} 
-              onClick={() => setSelectedJob(JOB_INFO[job as keyof typeof JOB_INFO])}
-              className="w-full bg-slate-800/60 hover:bg-slate-800 border border-slate-700 rounded-xl p-4 flex justify-between items-center cursor-pointer transition-colors"
+              onClick={() => setSelectedJob(getJobInfo(job))}
+              className="w-full bg-slate-800/60 hover:bg-slate-800 border border-slate-700 hover:border-primary/50 rounded-xl p-4 flex justify-between items-center cursor-pointer transition-colors"
             >
               <span className="text-slate-200 font-medium">{job}</span>
               <span className="text-slate-500 text-xs">상세 보기 &gt;</span>
@@ -140,38 +143,40 @@ export default function DashboardPage() {
         </div>
       </section>
 
-      {/* 3. 리얼 직무 VLOG 섹션 (프리미엄 기능 포함) */}
+      {/* 3. 리얼 직무 VLOG 섹션 */}
       <section className="px-6 pb-6 space-y-6">
         <div>
           <h2 className="text-white font-bold mb-3 flex items-center gap-2">
             <span>🎬</span> 현직자 리얼 VLOG
           </h2>
           <div className="flex gap-4 overflow-x-auto pb-4 snap-x hide-scrollbar">
-            {VLOGS.map((vlog) => (
+            {AI_VLOGS.map((vlog: any) => (
               <div 
                 key={vlog.id} 
-                onClick={() => (!isSubscribed && vlog.isPremium) ? setShowPremiumModal(true) : setSelectedVlogId(vlog.youtubeId)}
-                className="min-w-[240px] h-36 bg-slate-800 rounded-xl relative overflow-hidden flex-shrink-0 snap-center cursor-pointer group border border-slate-700"
-                style={{ backgroundImage: `url(https://img.youtube.com/vi/${vlog.youtubeId}/mqdefault.jpg)`, backgroundSize: 'cover', backgroundPosition: 'center' }}
+                onClick={() => (!isSubscribed && vlog.isPremium) ? setShowPremiumModal(true) : setSelectedVlogQuery(vlog.searchQuery)}
+                className="min-w-[240px] h-36 bg-slate-800 rounded-xl relative overflow-hidden flex-shrink-0 snap-center cursor-pointer group border border-slate-700 flex items-center justify-center"
               >
+                {/* 썸네일 대신 텍스트와 아이콘 배치 (검색 쿼리 기반이므로 특정 썸네일 불가) */}
+                <div className="absolute inset-0 bg-gradient-to-br from-slate-800 to-slate-900 z-0"></div>
+                <div className="z-10 text-center px-4">
+                  <span className="text-3xl mb-2 block opacity-80">🎥</span>
+                  <p className="text-white text-sm font-bold drop-shadow-md">{vlog.title}</p>
+                </div>
+
                 {(!isSubscribed && vlog.isPremium) ? (
-                  <div className="absolute inset-0 bg-black/70 backdrop-blur-[4px] flex items-center justify-center group-hover:bg-black/80 transition-colors z-10">
+                  <div className="absolute inset-0 bg-black/80 backdrop-blur-[4px] flex items-center justify-center group-hover:bg-black/90 transition-colors z-20">
                     <div className="flex flex-col items-center">
                       <span className="text-3xl mb-2">🔒</span>
                       <span className="bg-gradient-to-r from-yellow-500 to-amber-500 text-black text-xs font-bold px-3 py-1 rounded-full uppercase shadow-lg shadow-yellow-500/20">Premium Unlock</span>
                     </div>
                   </div>
                 ) : (
-                  <div className="absolute inset-0 flex items-center justify-center z-10 opacity-0 group-hover:opacity-100 transition-opacity bg-black/40">
+                  <div className="absolute inset-0 flex items-center justify-center z-20 opacity-0 group-hover:opacity-100 transition-opacity bg-black/40">
                     <span className="w-12 h-12 bg-primary/90 rounded-full flex items-center justify-center text-white pl-1 shadow-lg shadow-primary/30">▶</span>
                   </div>
                 )}
-                <div className={`absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent z-0 ${(!isSubscribed && vlog.isPremium) ? 'blur-sm' : ''}`}></div>
-                <div className="absolute top-2 right-2 z-0">
+                <div className="absolute top-2 right-2 z-10">
                   <span className="bg-slate-900/80 text-emerald-400 text-[10px] font-bold px-2 py-1 rounded border border-emerald-400/30">{vlog.tag}</span>
-                </div>
-                <div className={`absolute bottom-3 left-3 right-3 z-0 ${(!isSubscribed && vlog.isPremium) ? 'blur-[3px]' : ''}`}>
-                  <p className="text-white text-sm font-bold line-clamp-2 leading-snug drop-shadow-md">{vlog.title}</p>
                 </div>
               </div>
             ))}
@@ -185,52 +190,44 @@ export default function DashboardPage() {
           </h2>
           <div className="relative bg-slate-800 rounded-xl border border-slate-700 overflow-hidden">
             <div className={`p-5 ${!isSubscribed ? 'h-48 filter blur-[6px] opacity-40 overflow-hidden' : 'bg-gradient-to-br from-slate-800 to-slate-900'}`}>
-              <h3 className="text-white font-bold mb-4">비전공자 프론트엔드 네카라쿠배 합격 커리큘럼</h3>
+              <h3 className="text-white font-bold mb-4 text-emerald-400">
+                {userPersona ? `비전공자 [${userPersona.jobs[0]}] 합격 커리큘럼` : '비전공자 네카라쿠배 합격 커리큘럼'}
+              </h3>
               
               {!isSubscribed ? (
-                // 구독 전: 흐릿한 바 형태의 목업
                 <div className="space-y-3">
                   <div className="flex items-center gap-3"><div className="w-6 h-6 rounded-full bg-emerald-500 text-xs flex items-center justify-center font-bold">1</div><div className="h-4 bg-slate-600 rounded w-2/3"></div></div>
                   <div className="flex items-center gap-3"><div className="w-6 h-6 rounded-full bg-emerald-500 text-xs flex items-center justify-center font-bold">2</div><div className="h-4 bg-slate-600 rounded w-3/4"></div></div>
                   <div className="flex items-center gap-3"><div className="w-6 h-6 rounded-full bg-emerald-500 text-xs flex items-center justify-center font-bold">3</div><div className="h-4 bg-slate-600 rounded w-1/2"></div></div>
                 </div>
               ) : (
-                // 구독 후: 실제 커리큘럼 표시
                 <div className="space-y-4 relative before:absolute before:inset-0 before:ml-3 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-slate-700 before:to-transparent">
                   <div className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
                     <div className="flex items-center justify-center w-6 h-6 rounded-full bg-emerald-500 shadow shrink-0 z-10 text-[10px] font-bold text-slate-900">1</div>
                     <div className="w-[calc(100%-2.5rem)] md:w-[calc(50%-2.5rem)] p-3 rounded border border-slate-700 bg-slate-800/80 shadow">
-                      <div className="flex items-center justify-between space-x-2 mb-1">
-                        <div className="font-bold text-slate-200 text-sm">CS 기초 및 JS 딥다이브</div>
-                      </div>
-                      <div className="text-xs text-slate-400">네트워크, 브라우저 렌더링, JS 실행 컨텍스트 완벽 이해 (모던 자바스크립트 딥다이브 3회독)</div>
+                      <div className="font-bold text-slate-200 text-sm mb-1">직무 기초 지식 습득</div>
+                      <div className="text-xs text-slate-400">가장 기본적인 용어와 원리를 파악하고 관련 도서 3권 이상 정독하기</div>
                     </div>
                   </div>
                   <div className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
                     <div className="flex items-center justify-center w-6 h-6 rounded-full bg-emerald-500 shadow shrink-0 z-10 text-[10px] font-bold text-slate-900">2</div>
                     <div className="w-[calc(100%-2.5rem)] md:w-[calc(50%-2.5rem)] p-3 rounded border border-slate-700 bg-slate-800/80 shadow">
-                      <div className="flex items-center justify-between space-x-2 mb-1">
-                        <div className="font-bold text-slate-200 text-sm">React 고급 패턴 & 상태 관리</div>
-                      </div>
-                      <div className="text-xs text-slate-400">Context API, Zustand, React Query를 활용한 복잡한 상태 분리 및 렌더링 최적화 훈련</div>
+                      <div className="font-bold text-slate-200 text-sm mb-1">필수 툴 및 기술 스택 마스터</div>
+                      <div className="text-xs text-slate-400">현업에서 요구하는 필수 기술을 활용하여 간단한 토이 프로젝트 진행</div>
                     </div>
                   </div>
                   <div className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
                     <div className="flex items-center justify-center w-6 h-6 rounded-full bg-emerald-500 shadow shrink-0 z-10 text-[10px] font-bold text-slate-900">3</div>
                     <div className="w-[calc(100%-2.5rem)] md:w-[calc(50%-2.5rem)] p-3 rounded border border-slate-700 bg-slate-800/80 shadow">
-                      <div className="flex items-center justify-between space-x-2 mb-1">
-                        <div className="font-bold text-slate-200 text-sm">성능 최적화 중심 프로젝트</div>
-                      </div>
-                      <div className="text-xs text-slate-400">Lighthouse 95점 이상 목표. 무한 스크롤, 디바운스/쓰로틀링, 이미지 레이지 로딩 적용 필수</div>
+                      <div className="font-bold text-slate-200 text-sm mb-1">실전 포트폴리오 구축</div>
+                      <div className="text-xs text-slate-400">문제 해결 과정을 담은 노션/깃허브 포트폴리오 작성 (수치화된 성과 포함)</div>
                     </div>
                   </div>
                   <div className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
                     <div className="flex items-center justify-center w-6 h-6 rounded-full bg-emerald-500 shadow shrink-0 z-10 text-[10px] font-bold text-slate-900">4</div>
                     <div className="w-[calc(100%-2.5rem)] md:w-[calc(50%-2.5rem)] p-3 rounded border border-slate-700 bg-slate-800/80 shadow">
-                      <div className="flex items-center justify-between space-x-2 mb-1">
-                        <div className="font-bold text-slate-200 text-sm">알고리즘 코딩테스트 집중</div>
-                      </div>
-                      <div className="text-xs text-slate-400">프로그래머스 레벨2~3 필수 유형(구현, DFS/BFS, 투포인터) 하루 2문제씩 풀이 및 리뷰</div>
+                      <div className="font-bold text-slate-200 text-sm mb-1">면접 및 코딩/과제 테스트</div>
+                      <div className="text-xs text-slate-400">STAR 기법을 활용한 예상 질문 리스트 작성 및 모의 면접 반복 훈련</div>
                     </div>
                   </div>
                 </div>
@@ -259,7 +256,7 @@ export default function DashboardPage() {
             <div className="text-center mt-4">
               <div className="text-5xl mb-4 drop-shadow-lg shadow-yellow-500">💎</div>
               <h2 className="text-2xl font-bold text-white mb-2">프리미엄 멤버십</h2>
-              <p className="text-slate-300 text-sm mb-6 leading-relaxed">월 9,900원 구독하고 현직자의 리얼한 고충과 시크릿 합격 로드맵을 모두 확인하세요!</p>
+              <p className="text-slate-300 text-sm mb-6 leading-relaxed">월 9,900원 구독하고 AI가 맞춤 추천하는 시크릿 합격 로드맵과 현직자 VLOG를 모두 확인하세요!</p>
               <button 
                 onClick={handleSubscribe}
                 className="w-full py-4 bg-gradient-to-r from-yellow-500 to-amber-500 text-black font-extrabold text-lg rounded-xl shadow-lg shadow-yellow-500/20 active:scale-95 transition-transform"
@@ -271,18 +268,19 @@ export default function DashboardPage() {
         </div>
       )}
 
-      {/* 유튜브 영상 모달 */}
-      {selectedVlogId && (
+      {/* 유튜브 영상 모달 (검색 임베드 활용) */}
+      {selectedVlogQuery && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-in fade-in duration-200">
           <div className="bg-slate-900 border border-slate-700 rounded-2xl w-full max-w-3xl overflow-hidden relative shadow-2xl">
-            <div className="flex justify-end p-2 bg-slate-900">
-              <button onClick={() => setSelectedVlogId(null)} className="w-8 h-8 rounded-full flex items-center justify-center text-slate-400 hover:text-white hover:bg-slate-800 transition-colors">✕</button>
+            <div className="flex justify-between items-center p-3 bg-slate-900 border-b border-slate-800">
+              <span className="text-emerald-400 font-bold text-sm">📺 관련 영상 시청 중</span>
+              <button onClick={() => setSelectedVlogQuery(null)} className="w-8 h-8 rounded-full flex items-center justify-center text-slate-400 hover:text-white hover:bg-slate-800 transition-colors">✕</button>
             </div>
             <div className="relative w-full pb-[56.25%] bg-black">
               <iframe 
                 className="absolute top-0 left-0 w-full h-full"
-                src={`https://www.youtube.com/embed/${selectedVlogId}?autoplay=1`} 
-                title="YouTube video player" 
+                src={`https://www.youtube.com/embed?listType=search&list=${encodeURIComponent(selectedVlogQuery)}`} 
+                title="YouTube Search Video" 
                 frameBorder="0" 
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
                 allowFullScreen

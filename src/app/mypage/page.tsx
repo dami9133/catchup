@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { PersonaCard } from '@/components/PersonaCard';
 
 type QuestState = 'idle' | 'in_progress' | 'completed';
@@ -11,6 +11,25 @@ export default function MyPage() {
   const [showVerifyModal, setShowVerifyModal] = useState(false);
   const [activeQuestIndex, setActiveQuestIndex] = useState(0);
   const [uploadedFileName, setUploadedFileName] = useState<string | null>(null);
+
+  const [userPersona, setUserPersona] = useState<any>(null);
+  const [isSubscribed, setIsSubscribed] = useState(false);
+
+  useEffect(() => {
+    // 저장된 페르소나와 구독 상태 불러오기
+    const savedPersona = localStorage.getItem('userPersona');
+    if (savedPersona) {
+      try {
+        setUserPersona(JSON.parse(savedPersona));
+      } catch (e) {
+        console.error(e);
+      }
+    }
+    const sub = localStorage.getItem('isSubscribed');
+    if (sub === 'true') {
+      setIsSubscribed(true);
+    }
+  }, []);
 
   const QUESTS = [
     { id: 1, title: '내 직무와 관련된 최신 아티클 1개 읽고 요약하기', reward: 50 },
@@ -62,7 +81,9 @@ export default function MyPage() {
     <main className="min-h-full pb-20 bg-background flex flex-col p-6 overflow-y-auto relative">
       <header className="mb-6 flex justify-between items-center">
         <h1 className="text-2xl font-bold text-white">마이페이지</h1>
-        <span className="bg-slate-800 text-slate-300 text-xs px-3 py-1 rounded-full border border-slate-700">Free 플랜</span>
+        <span className="bg-slate-800 text-slate-300 text-xs px-3 py-1 rounded-full border border-slate-700">
+          {isSubscribed ? 'Premium 💎' : 'Free 플랜'}
+        </span>
       </header>
 
       {/* 나의 페르소나 */}
@@ -71,9 +92,9 @@ export default function MyPage() {
           <span>👑</span> 나의 커리어 페르소나
         </h2>
         <PersonaCard 
-          name="실행력 100% 불도저"
-          description="어떤 과제든 망설임 없이 시작하며, 문제를 겪으면서 빠르게 해결책을 찾아내는 탁월한 실행력을 갖췄습니다."
-          jobs={['스타트업 창업가', '그로스 해커', '세일즈 매니저']}
+          name={userPersona ? userPersona.name : "미검사 상태입니다"}
+          description={userPersona ? userPersona.desc : "테스트 메뉴에서 나만의 커리어 페르소나를 찾고 맞춤형 추천을 받아보세요."}
+          jobs={userPersona ? userPersona.jobs : ['-']}
         />
       </section>
 
@@ -150,12 +171,13 @@ export default function MyPage() {
         </h2>
         <div className="bg-slate-800 rounded-xl p-5 border border-slate-700">
           <div className="flex justify-between items-center mb-2">
-            <p className="text-white font-medium">베이직 플랜 (무료)</p>
-            <button className="text-xs text-primary font-bold hover:underline">업그레이드</button>
+            <p className="text-white font-medium">{isSubscribed ? '프리미엄 플랜 💎' : '베이직 플랜 (무료)'}</p>
+            {!isSubscribed && <button className="text-xs text-primary font-bold hover:underline">업그레이드</button>}
           </div>
           <p className="text-xs text-slate-400 leading-relaxed">
-            프리미엄 멤버십으로 업그레이드하고<br/>
-            현직자 시크릿 로드맵과 리얼 VLOG를 제한 없이 확인하세요.
+            {isSubscribed 
+              ? '프리미엄 멤버십 구독 중입니다. 현직자 시크릿 로드맵과 리얼 VLOG를 자유롭게 이용하세요.'
+              : '프리미엄 멤버십으로 업그레이드하고\n현직자 시크릿 로드맵과 리얼 VLOG를 제한 없이 확인하세요.'}
           </p>
         </div>
       </section>
