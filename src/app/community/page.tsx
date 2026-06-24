@@ -187,7 +187,7 @@ export default function CommunityPage() {
               
               <div className="mt-8 space-y-3">
                 <a 
-                  href={selectedStartup.url && selectedStartup.url !== '#' ? selectedStartup.url : `https://www.k-startup.go.kr/web/contents/bizpbanc-ongoing.do?schM=search&schTelmsg=${encodeURIComponent(selectedStartup.title)}`}
+                  href={selectedStartup.url && selectedStartup.url !== '#' && selectedStartup.url.startsWith('http') ? selectedStartup.url : `https://www.k-startup.go.kr/web/contents/bizpbanc-ongoing.do?schM=view&pbancSn=${selectedStartup.id}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="block w-full py-4 bg-primary hover:bg-primary-hover text-white text-center font-bold rounded-xl transition-colors shadow-lg shadow-primary/20"
