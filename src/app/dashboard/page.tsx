@@ -11,27 +11,56 @@ export default function DashboardPage() {
   const [selectedJob, setSelectedJob] = useState<any>(null);
   const [selectedVlogQuery, setSelectedVlogQuery] = useState<string | null>(null);
   const [userPersona, setUserPersona] = useState<any>(null);
+  const [vlogs, setVlogs] = useState<any[]>([]);
 
   useEffect(() => {
     // 저장된 페르소나와 구독 상태 불러오기
+    let currentPersona = null;
     const savedPersona = localStorage.getItem('userPersona');
     if (savedPersona) {
       try {
-        setUserPersona(JSON.parse(savedPersona));
+        currentPersona = JSON.parse(savedPersona);
+        setUserPersona(currentPersona);
       } catch (e) {
         console.error(e);
       }
     }
     const sub = localStorage.getItem('isSubscribed');
-    if (sub === 'true') {
+    const currentSub = sub === 'true';
+    if (currentSub) {
       setIsSubscribed(true);
     }
+
+    // BFF에서 VLOG 데이터 Fetch
+    fetch(`/api/vlogs?isPremium=${currentSub}`)
+      .then(res => res.json())
+      .then(data => {
+        if (data.success && data.data) {
+          // 페르소나 기반 직무 추출 (추천 직업)
+          const jobs = currentPersona?.jobs || ['콘텐츠 마케터', '그로스 해커'];
+          // 추천 직무와 일치하는 VLOG만 필터링
+          const filtered = data.data.filter((v: any) => jobs.includes(v.jobName));
+          setVlogs(filtered.length > 0 ? filtered : data.data.slice(0, 5));
+        }
+      })
+      .catch(e => console.error(e));
   }, []);
 
   const handleSubscribe = () => {
     setIsSubscribed(true);
     localStorage.setItem('isSubscribed', 'true');
     setShowPremiumModal(false);
+
+    // 구독 완료 시 진짜 영상 링크를 얻기 위해 BFF 재호출
+    fetch(`/api/vlogs?isPremium=true`)
+      .then(res => res.json())
+      .then(data => {
+        if (data.success && data.data) {
+          const jobs = userPersona?.jobs || ['콘텐츠 마케터', '그로스 해커'];
+          const filtered = data.data.filter((v: any) => jobs.includes(v.jobName));
+          setVlogs(filtered.length > 0 ? filtered : data.data.slice(0, 5));
+        }
+      });
   };
 
   const JOB_INFO: Record<string, any> = {
@@ -50,23 +79,6 @@ export default function DashboardPage() {
   
   // AI 추천 직업 동적 할당
   const recommendedJobs = userPersona?.jobs || ['콘텐츠 마케터', '그로스 해커'];
-
-  // VLOG 추천 동적 할당 (유튜브 검색 쿼리 사용)
-  const AI_VLOGS = recommendedJobs.map((job: string, idx: number) => ({
-    id: idx + 1,
-    title: `${job}의 하루 브이로그`,
-    tag: idx === 0 ? 'AI 추천' : '관련 직무',
-    isPremium: true,
-    searchQuery: `${job} 브이로그`
-  }));
-  // 무료 샘플 영상 1개 추가
-  AI_VLOGS.push({
-    id: 99,
-    title: '신입 채용 담당자의 꿀팁',
-    tag: '무료 공개',
-    isPremium: false,
-    searchQuery: '스타트업 채용 면접 팁'
-  });
 
   return (
     <main className="min-h-full pb-20 bg-background flex flex-col relative">
@@ -150,33 +162,48 @@ export default function DashboardPage() {
             <span>🎬</span> 현직자 리얼 VLOG
           </h2>
           <div className="flex gap-4 overflow-x-auto pb-4 snap-x hide-scrollbar">
-            {AI_VLOGS.map((vlog: any) => (
+            {vlogs.map((vlog: any) => (
               <div 
                 key={vlog.id} 
-                onClick={() => (!isSubscribed && vlog.isPremium) ? setShowPremiumModal(true) : setSelectedVlogQuery(vlog.searchQuery)}
+                onClick={() => {
+                  if (!vlog.videoUrl) {
+                    setShowPremiumModal(true);
+                  } else {
+                    window.open(vlog.videoUrl, '_blank');
+                  }
+                }}
                 className="min-w-[240px] h-36 bg-slate-800 rounded-xl relative overflow-hidden flex-shrink-0 snap-center cursor-pointer group border border-slate-700 flex items-center justify-center"
               >
-                {/* 썸네일 대신 텍스트와 아이콘 배치 (검색 쿼리 기반이므로 특정 썸네일 불가) */}
-                <div className="absolute inset-0 bg-gradient-to-br from-slate-800 to-slate-900 z-0"></div>
-                <div className="z-10 text-center px-4">
-                  <span className="text-3xl mb-2 block opacity-80">🎥</span>
-                  <p className="text-white text-sm font-bold drop-shadow-md">{vlog.title}</p>
+                {/* 썸네일 이미지 렌더링 */}
+                {vlog.thumbnailUrl ? (
+                  <img src={vlog.thumbnailUrl} alt={vlog.title} className="absolute inset-0 w-full h-full object-cover z-0 opacity-60 group-hover:opacity-80 transition-opacity" />
+                ) : (
+                  <div className="absolute inset-0 bg-gradient-to-br from-slate-800 to-slate-900 z-0"></div>
+                )}
+
+                {/* 하단 제목 표시영역 */}
+                <div className="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black/90 to-transparent z-20">
+                  <p className="text-white text-sm font-bold line-clamp-2 drop-shadow-md">{vlog.title}</p>
                 </div>
 
-                {(!isSubscribed && vlog.isPremium) ? (
-                  <div className="absolute inset-0 bg-black/80 backdrop-blur-[4px] flex items-center justify-center group-hover:bg-black/90 transition-colors z-20">
-                    <div className="flex flex-col items-center">
-                      <span className="text-3xl mb-2">🔒</span>
-                      <span className="bg-gradient-to-r from-yellow-500 to-amber-500 text-black text-xs font-bold px-3 py-1 rounded-full uppercase shadow-lg shadow-yellow-500/20">Premium Unlock</span>
-                    </div>
+                {/* 영상이 막힌 프리미엄 유저인지, 열려있는지 분기처리 */}
+                {(!vlog.videoUrl) ? (
+                  <div className="absolute inset-0 bg-black/50 backdrop-blur-[2px] flex flex-col items-center justify-center group-hover:bg-black/70 transition-colors z-10">
+                    <span className="text-3xl mb-1">🔒</span>
                   </div>
                 ) : (
-                  <div className="absolute inset-0 flex items-center justify-center z-20 opacity-0 group-hover:opacity-100 transition-opacity bg-black/40">
+                  <div className="absolute inset-0 flex items-center justify-center z-10 opacity-0 group-hover:opacity-100 transition-opacity bg-black/40">
                     <span className="w-12 h-12 bg-primary/90 rounded-full flex items-center justify-center text-white pl-1 shadow-lg shadow-primary/30">▶</span>
                   </div>
                 )}
-                <div className="absolute top-2 right-2 z-10">
-                  <span className="bg-slate-900/80 text-emerald-400 text-[10px] font-bold px-2 py-1 rounded border border-emerald-400/30">{vlog.tag}</span>
+                
+                {/* 상단 뱃지 */}
+                <div className="absolute top-2 right-2 z-20">
+                  {vlog.isPremium ? (
+                    <span className="bg-slate-900/90 text-yellow-400 text-[10px] font-bold px-2 py-1 rounded border border-yellow-400/50 shadow-md">Premium</span>
+                  ) : (
+                    <span className="bg-slate-900/90 text-emerald-400 text-[10px] font-bold px-2 py-1 rounded border border-emerald-400/50 shadow-md">Free</span>
+                  )}
                 </div>
               </div>
             ))}
@@ -268,27 +295,7 @@ export default function DashboardPage() {
         </div>
       )}
 
-      {/* 유튜브 영상 모달 (검색 임베드 활용) */}
-      {selectedVlogQuery && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-in fade-in duration-200">
-          <div className="bg-slate-900 border border-slate-700 rounded-2xl w-full max-w-3xl overflow-hidden relative shadow-2xl">
-            <div className="flex justify-between items-center p-3 bg-slate-900 border-b border-slate-800">
-              <span className="text-emerald-400 font-bold text-sm">📺 관련 영상 시청 중</span>
-              <button onClick={() => setSelectedVlogQuery(null)} className="w-8 h-8 rounded-full flex items-center justify-center text-slate-400 hover:text-white hover:bg-slate-800 transition-colors">✕</button>
-            </div>
-            <div className="relative w-full pb-[56.25%] bg-black">
-              <iframe 
-                className="absolute top-0 left-0 w-full h-full"
-                src={`https://www.youtube.com/embed?listType=search&list=${encodeURIComponent(selectedVlogQuery)}`} 
-                title="YouTube Search Video" 
-                frameBorder="0" 
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-                allowFullScreen
-              ></iframe>
-            </div>
-          </div>
-        </div>
-      )}
+
 
       {/* 직무 상세 모달 */}
       {selectedJob && (
