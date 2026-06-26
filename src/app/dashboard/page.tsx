@@ -55,13 +55,25 @@ const ROADMAP_DATA: Record<string, any[]> = {
     { step: 3, title: '클론 디자인 및 개선', desc: '기존 유명 앱들의 화면을 똑같이 따라 만들어보고, UX 측면에서 불편한 점을 찾아 개선해 보세요.' },
     { step: 4, title: '문제 해결 중심 포트폴리오', desc: '단순히 예쁜 화면이 아닌, 왜 이 버튼을 여기에 배치했는지 논리적 근거가 담긴 포트폴리오를 제작하세요.' }
   ],
+  'O2O 서비스 기획자': [
+    { step: 1, title: '플랫폼 비즈니스 기초 이해', desc: 'O2O(Online to Offline) 비즈니스 모델의 특징, 양면 시장(Two-sided Market) 구조를 완벽하게 숙지하세요.' },
+    { step: 2, title: '서비스 정책 및 로직 기획', desc: '오프라인의 경험을 온라인으로 매끄럽게 연결하기 위한 정책(예: 배달 동선, 예약 관리)을 수립해 보세요.' },
+    { step: 3, title: '와이어프레임 및 화면 설계', desc: 'Figma나 Balsamiq을 활용하여 사용자 앱(User)과 파트너 앱(Partner)의 화면 설계서를 작성하세요.' },
+    { step: 4, title: '데이터 기반 개선 포트폴리오', desc: '특정 O2O 서비스(예: 배민, 쏘카)를 분석하고, 문제점을 찾아내어 개선 기획안(역기획서)을 만드세요.' }
+  ],
+  '공간 디자이너': [
+    { step: 1, title: '공간 디자인 기초 및 도면 이해', desc: 'AutoCAD, SketchUp 등을 익히고 건축 도면(평면도, 입면도 등)을 읽고 그리는 법을 마스터하세요.' },
+    { step: 2, title: '브랜드 컨셉과 공간의 일치', desc: '단순한 인테리어를 넘어 브랜드의 철학을 공간에 녹여내는 컨셉 도출 방법론을 공부하세요.' },
+    { step: 3, title: '3D 렌더링 및 소재(Material) 학습', desc: 'V-Ray나 Enscape를 활용해 3D 렌더링 퀄리티를 높이고, 실제 마감재의 특성을 파악하세요.' },
+    { step: 4, title: '공간 제안서 포트폴리오', desc: '특정 브랜드를 위한 팝업스토어나 리테일 공간을 가상으로 기획하고 제안서 형태의 포트폴리오를 완성하세요.' }
+  ]
 };
 
-const DEFAULT_ROADMAP = [
-  { step: 1, title: '직무 기초 지식 습득', desc: '가장 기본적인 용어와 원리를 파악하고 관련 도서 3권 이상 정독하기. 모르는 용어는 노션에 정리하며 나만의 단어장을 만드세요.' },
-  { step: 2, title: '필수 툴 및 기술 스택 마스터', desc: '현업에서 요구하는 필수 기술을 활용하여 간단한 토이 프로젝트 진행. 완벽하지 않아도 일단 부딪혀보는 것이 중요합니다.' },
-  { step: 3, title: '실전 포트폴리오 구축', desc: '문제 해결 과정을 담은 노션/깃허브 포트폴리오 작성. 결과보다는 과정과 숫자로 표현된 성과(수치화)를 반드시 포함하세요.' },
-  { step: 4, title: '면접 및 코딩/과제 테스트', desc: 'STAR 기법(Situation, Task, Action, Result)을 활용한 예상 질문 리스트 작성 및 모의 면접 반복 훈련.' },
+const getDefaultRoadmap = (jobName: string) => [
+  { step: 1, title: `${jobName} 기초 지식 습득`, desc: `${jobName} 실무에 필요한 핵심 용어와 원리를 파악하고 관련 도서나 강의를 통해 기본기를 단단히 다지세요.` },
+  { step: 2, title: `필수 툴 및 기술 스택 마스터`, desc: `${jobName} 현업에서 요구하는 필수 툴과 기술을 파악하고 간단한 실습을 진행하며 손에 익히세요.` },
+  { step: 3, title: `실전 ${jobName} 포트폴리오 구축`, desc: `실제 문제를 해결하는 과정을 담은 포트폴리오를 작성하세요. 결과보다는 문제 해결 방식이 중요합니다.` },
+  { step: 4, title: `면접 및 실무 과제 준비`, desc: `해당 직무의 단골 면접 질문을 리스트업하고, STAR 기법을 활용해 논리적으로 답변하는 훈련을 하세요.` },
 ];
 
 export default function DashboardPage() {
@@ -377,7 +389,7 @@ export default function DashboardPage() {
           </h2>
           
           {top2Jobs.map((jobName: string, jobIdx: number) => {
-            const steps = ROADMAP_DATA[jobName] || DEFAULT_ROADMAP;
+            const steps = ROADMAP_DATA[jobName] || getDefaultRoadmap(jobName);
             return (
               <div key={jobName} className="relative bg-white rounded-[2rem] border border-slate-100 overflow-hidden shadow-sm">
                 <div className={`p-5 ${!isSubscribed ? 'h-48 filter blur-[6px] opacity-40 overflow-hidden pointer-events-none' : ''}`}>
