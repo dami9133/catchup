@@ -1,9 +1,56 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { Flame, TrendingUp, Sparkles, Video, Lock, Unlock, Map as MapIcon, Gem, ChevronRight, ChevronLeft, ChevronDown, PlayCircle, Building2, Clock, Link as LinkIcon, X } from 'lucide-react';
+import { Flame, TrendingUp, Sparkles, Video, Lock, Unlock, Map as MapIcon, Gem, ChevronRight, ChevronLeft, ChevronDown, PlayCircle, Building2, Clock, Link as LinkIcon, X, ArrowRight } from 'lucide-react';
+import Link from 'next/link';
 
 type JobCategory = 'recommended' | 'popular';
+
+const ROADMAP_DATA: Record<string, any[]> = {
+  '데이터 분석가': [
+    { step: 1, title: '데이터 분석 기초 수강', desc: 'SQL 기초 문법과 파이썬 데이터 전처리 라이브러리(Pandas, NumPy)를 익히세요.' },
+    { step: 2, title: '미니 프로젝트 진행', desc: 'Kaggle이나 공공 데이터를 활용하여 EDA(탐색적 데이터 분석)를 수행하고 인사이트를 도출해보세요.' },
+    { step: 3, title: '대시보드 툴 마스터', desc: '실무에서 자주 쓰이는 Tableau, PowerBI 등의 시각화 툴을 익혀 대시보드를 구축해 보세요.' },
+    { step: 4, title: '실무 포트폴리오 완성', desc: 'A/B 테스트 기획부터 결과 분석, 리포팅까지의 과정을 담은 실무형 포트폴리오를 작성하세요.' }
+  ],
+  'AI 프롬프트 엔지니어': [
+    { step: 1, title: 'LLM 기본 원리 이해', desc: '트랜스포머 아키텍처와 LLM의 작동 방식, 그리고 토큰화의 개념을 학습하세요.' },
+    { step: 2, title: '프롬프트 테크닉 숙달', desc: 'Zero-shot, Few-shot, Chain-of-Thought 등 다양한 프롬프트 엔지니어링 기법을 실습하세요.' },
+    { step: 3, title: 'API 활용 및 파인튜닝', desc: 'OpenAI API를 활용하여 실제 어플리케이션에 LLM을 연동해보고, 파인튜닝의 기초를 익히세요.' },
+    { step: 4, title: 'AI 서비스 기획 프로젝트', desc: '특정 문제를 해결하는 챗봇이나 텍스트 생성 도구를 기획하고, 그 과정을 노션에 정리하세요.' }
+  ],
+  '그로스 해커': [
+    { step: 1, title: '퍼널 및 지표의 이해', desc: 'AARRR 퍼널 모델과 리텐션, LTV 등 비즈니스 핵심 지표의 개념을 완벽하게 숙지하세요.' },
+    { step: 2, title: '구글 애널리틱스 마스터', desc: 'GA4와 GTM을 활용하여 사용자 행동 데이터를 추적하고 분석하는 방법을 익히세요.' },
+    { step: 3, title: 'A/B 테스트 실험 설계', desc: '버튼 색상, 카피 변경 등 작은 실험을 설계하고 데이터를 통해 가설을 검증해보세요.' },
+    { step: 4, title: '그로스 실험 리포트 작성', desc: '문제 정의 - 가설 수립 - 실험 - 결과 분석의 사이클을 담은 그로스 해킹 리포트를 완성하세요.' }
+  ],
+  '콘텐츠 마케터': [
+    { step: 1, title: 'SNS 플랫폼별 이해', desc: '인스타그램, 유튜브, 틱톡 등 플랫폼별 사용자 특성과 알고리즘을 분석하세요.' },
+    { step: 2, title: '카피라이팅 및 디자인', desc: '클릭을 유도하는 후킹 카피 작성법과 피그마, 캔바 등을 활용한 썸네일/카드뉴스 제작을 익히세요.' },
+    { step: 3, title: '숏폼 콘텐츠 기획', desc: '직접 릴스나 쇼츠 영상을 기획하고 제작하여 채널을 운영해보며 반응을 테스트하세요.' },
+    { step: 4, title: '마케팅 성과 포트폴리오', desc: '자신이 만든 콘텐츠의 조회수, 전환율 등 수치화된 성과를 노션 포트폴리오로 정리하세요.' }
+  ],
+  'UX/UI 디자이너': [
+    { step: 1, title: '디자인 기초 및 툴 학습', desc: '피그마(Figma)를 마스터하고 타이포그래피, 컬러, 그리드 시스템 등 디자인 기초를 익히세요.' },
+    { step: 2, title: 'UX 리서치 방법론', desc: '유저 인터뷰, 페르소나 설정, 유저 저니 맵 등 사용자 중심 설계 방법론을 공부하세요.' },
+    { step: 3, title: '클론 디자인 및 개선', desc: '기존 유명 앱들의 화면을 똑같이 따라 만들어보고, UX 측면에서 불편한 점을 찾아 개선해 보세요.' },
+    { step: 4, title: '문제 해결 중심 포트폴리오', desc: '단순히 예쁜 화면이 아닌, 왜 이 버튼을 여기에 배치했는지 논리적 근거가 담긴 포트폴리오를 제작하세요.' }
+  ],
+  '백엔드 개발자': [
+    { step: 1, title: '언어 및 프레임워크 기초', desc: 'Java(Spring) 또는 Node.js(Express/NestJS) 중 하나를 선택하여 기본 문법과 구조를 익히세요.' },
+    { step: 2, title: '데이터베이스 설계', desc: '관계형 데이터베이스(MySQL)의 설계와 쿼리 작성법을 배우고, ORM의 사용법을 익히세요.' },
+    { step: 3, title: 'API 서버 구축', desc: 'RESTful API를 설계하고 인증(JWT) 및 권한 처리 로직이 포함된 서버를 직접 구축해 보세요.' },
+    { step: 4, title: 'AWS 배포 및 성능 개선', desc: '클라우드 환경(AWS)에 배포해보고, 대용량 트래픽을 가정하여 쿼리 최적화 등 성능 개선 경험을 정리하세요.' }
+  ]
+};
+
+const DEFAULT_ROADMAP = [
+  { step: 1, title: '직무 기초 지식 습득', desc: '가장 기본적인 용어와 원리를 파악하고 관련 도서 3권 이상 정독하기. 모르는 용어는 노션에 정리하며 나만의 단어장을 만드세요.' },
+  { step: 2, title: '필수 툴 및 기술 스택 마스터', desc: '현업에서 요구하는 필수 기술을 활용하여 간단한 토이 프로젝트 진행. 완벽하지 않아도 일단 부딪혀보는 것이 중요합니다.' },
+  { step: 3, title: '실전 포트폴리오 구축', desc: '문제 해결 과정을 담은 노션/깃허브 포트폴리오 작성. 결과보다는 과정과 숫자로 표현된 성과(수치화)를 반드시 포함하세요.' },
+  { step: 4, title: '면접 및 코딩/과제 테스트', desc: 'STAR 기법(Situation, Task, Action, Result)을 활용한 예상 질문 리스트 작성 및 모의 면접 반복 훈련.' },
+];
 
 export default function DashboardPage() {
   const [showPremiumModal, setShowPremiumModal] = useState(false);
@@ -12,7 +59,7 @@ export default function DashboardPage() {
   const [selectedJob, setSelectedJob] = useState<any>(null);
   const [userPersona, setUserPersona] = useState<any>(null);
   const [vlogs, setVlogs] = useState<any[]>([]);
-  const [expandedStep, setExpandedStep] = useState<number | null>(null);
+  const [expandedStep, setExpandedStep] = useState<string | null>(null);
 
   const scrollRefJobs = useRef<HTMLDivElement>(null);
   const scrollRefVlogs = useRef<HTMLDivElement>(null);
@@ -101,13 +148,9 @@ export default function DashboardPage() {
   const getJobInfo = (jobName: string) => JOB_INFO[jobName] || { ...fallbackJob, title: jobName };
   const TRENDING_JOBS = ['데이터 분석가', 'AI 프롬프트 엔지니어', '그로스 해커'];
   const recommendedJobs = userPersona?.jobs || ['콘텐츠 마케터', '그로스 해커'];
-
-  const roadmapSteps = [
-    { step: 1, title: '직무 기초 지식 습득', desc: '가장 기본적인 용어와 원리를 파악하고 관련 도서 3권 이상 정독하기. 모르는 용어는 노션에 정리하며 나만의 단어장을 만드세요.' },
-    { step: 2, title: '필수 툴 및 기술 스택 마스터', desc: '현업에서 요구하는 필수 기술을 활용하여 간단한 토이 프로젝트 진행. 완벽하지 않아도 일단 부딪혀보는 것이 중요합니다.' },
-    { step: 3, title: '실전 포트폴리오 구축', desc: '문제 해결 과정을 담은 노션/깃허브 포트폴리오 작성. 결과보다는 과정과 숫자로 표현된 성과(수치화)를 반드시 포함하세요.' },
-    { step: 4, title: '면접 및 코딩/과제 테스트', desc: 'STAR 기법(Situation, Task, Action, Result)을 활용한 예상 질문 리스트 작성 및 모의 면접 반복 훈련.' },
-  ];
+  
+  // 추천 직무 2개 추출 (부족하면 기본값 매핑)
+  const top2Jobs = recommendedJobs.slice(0, 2);
 
   return (
     <main className="min-h-full pb-20 bg-slate-50 flex flex-col relative break-keep whitespace-pre-wrap">
@@ -125,10 +168,16 @@ export default function DashboardPage() {
       <div className="flex-1 space-y-8">
         {/* 1. 요새 뜨는 직업 (가로 스크롤) */}
         <section className="px-5">
-          <h2 className="text-slate-900 font-extrabold text-lg mb-4 flex items-center gap-1.5">
-            <Flame className="w-5 h-5 text-orange-500" />
-            요새 뜨는 직업
-          </h2>
+          <div className="flex justify-between items-end mb-4">
+            <h2 className="text-slate-900 font-extrabold text-lg flex items-center gap-1.5">
+              <Flame className="w-5 h-5 text-orange-500" />
+              요새 뜨는 직업
+            </h2>
+            <Link href="/explore" className="text-xs font-bold text-slate-500 flex items-center gap-1 hover:text-blue-600 transition-colors">
+              직업 전체보기 <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
+          </div>
+          
           <div className="relative group">
             <div 
               className="flex gap-3 overflow-x-auto pb-4 hide-scrollbar snap-x pr-12" 
@@ -308,55 +357,66 @@ export default function DashboardPage() {
           </div>
         </section>
 
-        {/* 4. 시크릿 자격증 로드맵 (Accordion UI) */}
-        <section className="px-5 pb-8">
+        {/* 4. 시크릿 자격증 로드맵 (Accordion UI) - 동적 2개 렌더링 */}
+        <section className="px-5 pb-8 space-y-6">
           <h2 className="text-slate-900 font-extrabold text-lg mb-4 flex items-center gap-1.5">
             <MapIcon className="w-5 h-5 text-emerald-500" />
             시크릿 합격 로드맵
           </h2>
-          <div className="relative bg-white rounded-[2rem] border border-slate-100 overflow-hidden shadow-sm">
-            <div className={`p-5 ${!isSubscribed ? 'h-48 filter blur-[6px] opacity-40 overflow-hidden pointer-events-none' : ''}`}>
-              <h3 className="text-slate-900 font-extrabold mb-5 text-[15px] tracking-tight">
-                <span className="text-blue-600">{userPersona ? `[${userPersona.jobs[0]}]` : '네카라쿠배'}</span> 합격 커리큘럼
-              </h3>
-              
-              <div className="space-y-2.5">
-                {roadmapSteps.map(step => (
-                  <div key={step.step} className="border border-slate-100 rounded-2xl bg-slate-50 overflow-hidden transition-all">
-                    <button 
-                      onClick={() => setExpandedStep(expandedStep === step.step ? null : step.step)} 
-                      className="w-full p-4 flex items-center justify-between bg-white hover:bg-slate-50 transition-colors"
-                    >
-                      <div className="flex items-center gap-3 text-left">
-                        <div className="w-7 h-7 rounded-full bg-blue-50 text-blue-600 font-extrabold flex items-center justify-center text-xs shadow-sm border border-blue-100 shrink-0">
-                          {step.step}
+          
+          {top2Jobs.map((jobName: string, jobIdx: number) => {
+            const steps = ROADMAP_DATA[jobName] || DEFAULT_ROADMAP;
+            return (
+              <div key={jobName} className="relative bg-white rounded-[2rem] border border-slate-100 overflow-hidden shadow-sm">
+                <div className={`p-5 ${!isSubscribed ? 'h-48 filter blur-[6px] opacity-40 overflow-hidden pointer-events-none' : ''}`}>
+                  <h3 className="text-slate-900 font-extrabold mb-5 text-[15px] tracking-tight">
+                    <span className="text-blue-600">[{jobName}]</span> 합격 커리큘럼
+                  </h3>
+                  
+                  <div className="space-y-2.5">
+                    {steps.map(step => {
+                      const stepId = `${jobIdx}-${step.step}`;
+                      const isExpanded = expandedStep === stepId;
+                      
+                      return (
+                        <div key={stepId} className="border border-slate-100 rounded-2xl bg-slate-50 overflow-hidden transition-all">
+                          <button 
+                            onClick={() => setExpandedStep(isExpanded ? null : stepId)} 
+                            className="w-full p-4 flex items-center justify-between bg-white hover:bg-slate-50 transition-colors"
+                          >
+                            <div className="flex items-center gap-3 text-left">
+                              <div className="w-7 h-7 rounded-full bg-blue-50 text-blue-600 font-extrabold flex items-center justify-center text-xs shadow-sm border border-blue-100 shrink-0">
+                                {step.step}
+                              </div>
+                              <span className="font-extrabold text-slate-900 text-sm">{step.title}</span>
+                            </div>
+                            <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform duration-300 shrink-0 ${isExpanded ? 'rotate-180' : ''}`} />
+                          </button>
+                          {isExpanded && (
+                            <div className="p-4 pt-2 bg-white text-slate-500 text-xs leading-relaxed text-justify break-keep whitespace-pre-wrap animate-in fade-in slide-in-from-top-2 duration-200 border-t border-slate-50">
+                              {step.desc}
+                            </div>
+                          )}
                         </div>
-                        <span className="font-extrabold text-slate-900 text-sm">{step.title}</span>
-                      </div>
-                      <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform duration-300 shrink-0 ${expandedStep === step.step ? 'rotate-180' : ''}`} />
-                    </button>
-                    {expandedStep === step.step && (
-                      <div className="p-4 pt-2 bg-white text-slate-500 text-xs leading-relaxed text-justify break-keep whitespace-pre-wrap animate-in fade-in slide-in-from-top-2 duration-200 border-t border-slate-50">
-                        {step.desc}
-                      </div>
-                    )}
+                      );
+                    })}
                   </div>
-                ))}
+                </div>
+                
+                {!isSubscribed && (
+                  <div className="absolute inset-0 flex items-center justify-center bg-slate-50/50 backdrop-blur-[2px] z-10">
+                    <button 
+                      onClick={() => setShowPremiumModal(true)}
+                      className="bg-white text-slate-900 px-5 py-3.5 rounded-2xl font-extrabold text-sm shadow-sm border border-slate-100 transform transition-transform active:scale-95 flex items-center gap-2"
+                    >
+                      <span className="bg-slate-100 w-7 h-7 rounded-full flex items-center justify-center text-slate-800"><Unlock className="w-3.5 h-3.5" /></span> 
+                      프리미엄 멤버십 열람
+                    </button>
+                  </div>
+                )}
               </div>
-            </div>
-            
-            {!isSubscribed && (
-              <div className="absolute inset-0 flex items-center justify-center bg-slate-50/50 backdrop-blur-[2px] z-10">
-                <button 
-                  onClick={() => setShowPremiumModal(true)}
-                  className="bg-white text-slate-900 px-5 py-3.5 rounded-2xl font-extrabold text-sm shadow-sm border border-slate-100 transform transition-transform active:scale-95 flex items-center gap-2"
-                >
-                  <span className="bg-slate-100 w-7 h-7 rounded-full flex items-center justify-center text-slate-800"><Unlock className="w-3.5 h-3.5" /></span> 
-                  프리미엄 멤버십 열람
-                </button>
-              </div>
-            )}
-          </div>
+            );
+          })}
         </section>
       </div>
 
