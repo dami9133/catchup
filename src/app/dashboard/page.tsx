@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { Flame, TrendingUp, Sparkles, Video, Lock, Unlock, Map as MapIcon, Gem, ChevronRight, ChevronDown, PlayCircle, Building2, Clock, Link as LinkIcon, X } from 'lucide-react';
+import { Flame, TrendingUp, Sparkles, Video, Lock, Unlock, Map as MapIcon, Gem, ChevronRight, ChevronLeft, ChevronDown, PlayCircle, Building2, Clock, Link as LinkIcon, X } from 'lucide-react';
 
 type JobCategory = 'recommended' | 'popular';
 
@@ -17,11 +17,30 @@ export default function DashboardPage() {
   const scrollRefJobs = useRef<HTMLDivElement>(null);
   const scrollRefVlogs = useRef<HTMLDivElement>(null);
 
+  const [canScrollLeftJobs, setCanScrollLeftJobs] = useState(false);
+  const [canScrollRightJobs, setCanScrollRightJobs] = useState(true);
+  const [canScrollLeftVlogs, setCanScrollLeftVlogs] = useState(false);
+  const [canScrollRightVlogs, setCanScrollRightVlogs] = useState(true);
+
+  const handleScroll = (e: React.UIEvent<HTMLDivElement>, setLeft: Function, setRight: Function) => {
+    const { scrollLeft, scrollWidth, clientWidth } = e.currentTarget;
+    setLeft(scrollLeft > 0);
+    setRight(Math.ceil(scrollLeft + clientWidth) < scrollWidth);
+  };
+
   const scrollRight = (ref: React.RefObject<HTMLDivElement | null>, e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     if (ref.current) {
-      ref.current.scrollBy({ left: 300, behavior: 'smooth' });
+      ref.current.scrollBy({ left: 240, behavior: 'smooth' });
+    }
+  };
+
+  const scrollLeft = (ref: React.RefObject<HTMLDivElement | null>, e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (ref.current) {
+      ref.current.scrollBy({ left: -240, behavior: 'smooth' });
     }
   };
 
@@ -91,112 +110,133 @@ export default function DashboardPage() {
   ];
 
   return (
-    <main className="min-h-full pb-24 bg-slate-50 flex flex-col relative break-keep whitespace-pre-wrap">
-      <header className="px-6 pt-10 pb-8 bg-white rounded-b-[2rem] shadow-sm border-b border-slate-100 z-10 relative overflow-hidden mb-8">
+    <main className="min-h-full pb-20 bg-slate-50 flex flex-col relative break-keep whitespace-pre-wrap">
+      <header className="px-5 pt-8 pb-6 bg-white rounded-b-[2rem] shadow-sm border-b border-slate-100 z-10 relative overflow-hidden mb-6">
         <div className="absolute top-0 right-0 w-64 h-64 bg-blue-600/5 rounded-full filter blur-3xl -z-10 translate-x-1/3 -translate-y-1/3"></div>
-        <h1 className="text-3xl font-extrabold text-slate-900 mb-3 tracking-tight leading-tight flex flex-col">
+        <h1 className="text-2xl font-extrabold text-slate-900 mb-2 tracking-tight leading-tight flex flex-col">
           <span>{userPersona ? `${userPersona.name}님을 위한` : '당신을 위한'}</span>
           <span>직무 탐색 허브</span>
         </h1>
-        <p className="text-sm font-medium text-slate-500 leading-relaxed">
+        <p className="text-xs font-medium text-slate-500 leading-relaxed">
           {userPersona ? '나의 커리어 성향에 꼭 맞는 직무와 로드맵을 확인하세요.' : '요즘 뜨는 직무부터 숨겨진 꿀 직무까지 탐색해보세요.'}
         </p>
       </header>
 
-      <div className="flex-1 space-y-10">
+      <div className="flex-1 space-y-8">
         {/* 1. 요새 뜨는 직업 (가로 스크롤) */}
-        <section className="px-6">
-          <h2 className="text-slate-900 font-extrabold text-xl mb-5 flex items-center gap-2">
-            <Flame className="w-6 h-6 text-orange-500" />
+        <section className="px-5">
+          <h2 className="text-slate-900 font-extrabold text-lg mb-4 flex items-center gap-1.5">
+            <Flame className="w-5 h-5 text-orange-500" />
             요새 뜨는 직업
           </h2>
-          <div className="relative">
-            <div className="flex gap-4 overflow-x-auto pb-4 hide-scrollbar snap-x pr-12" ref={scrollRefJobs}>
+          <div className="relative group">
+            <div 
+              className="flex gap-3 overflow-x-auto pb-4 hide-scrollbar snap-x pr-12" 
+              ref={scrollRefJobs}
+              onScroll={(e) => handleScroll(e, setCanScrollLeftJobs, setCanScrollRightJobs)}
+            >
               {TRENDING_JOBS.map((job, idx) => (
                 <div 
                   key={idx} 
                   onClick={() => setSelectedJob(getJobInfo(job))}
-                  className="bg-white hover:bg-slate-50 border border-slate-100 transition-colors rounded-3xl p-6 w-[75%] max-w-[240px] snap-center flex-shrink-0 cursor-pointer relative shadow-sm"
+                  className="bg-white hover:bg-slate-50 border border-slate-100 transition-colors rounded-3xl p-5 w-[75%] max-w-[220px] snap-center flex-shrink-0 cursor-pointer relative shadow-sm"
                 >
-                  <div className="absolute top-0 left-0 w-8 h-8 bg-blue-600 rounded-tl-3xl rounded-br-2xl flex items-center justify-center text-white font-bold text-sm shadow-sm">
+                  <div className="absolute top-0 left-0 w-7 h-7 bg-blue-600 rounded-tl-3xl rounded-br-2xl flex items-center justify-center text-white font-bold text-xs shadow-sm">
                     {idx + 1}
                   </div>
-                  <TrendingUp className="w-8 h-8 text-blue-600 mb-3 mt-2" />
-                  <h3 className="text-slate-900 font-extrabold text-lg tracking-tight mb-2">{job}</h3>
+                  <TrendingUp className="w-7 h-7 text-blue-600 mb-2 mt-1" />
+                  <h3 className="text-slate-900 font-extrabold text-[15px] tracking-tight mb-1">{job}</h3>
                 </div>
               ))}
             </div>
-            {/* 우측 그라데이션 및 화살표 오버레이 */}
-            <div className="absolute right-0 top-0 bottom-4 w-20 bg-gradient-to-l from-slate-50 via-slate-50/80 to-transparent flex items-center justify-end pointer-events-none z-10">
+            
+            {/* 좌측 화살표 */}
+            {canScrollLeftJobs && (
+              <div className="absolute left-0 top-0 bottom-4 w-12 flex items-center justify-start pointer-events-none z-10">
+                <button 
+                  onClick={(e) => scrollLeft(scrollRefJobs, e)}
+                  className="w-8 h-8 bg-white/90 backdrop-blur-sm shadow-md rounded-full flex items-center justify-center text-slate-600 pointer-events-auto ml-1 hover:text-blue-600 transition-colors"
+                >
+                  <ChevronLeft className="w-5 h-5" />
+                </button>
+              </div>
+            )}
+            
+            {/* 우측 그라데이션 및 화살표 */}
+            <div className={`absolute right-0 top-0 bottom-4 w-16 bg-gradient-to-l from-slate-50 via-slate-50/80 to-transparent flex items-center justify-end pointer-events-none z-10 transition-opacity ${canScrollRightJobs ? 'opacity-100' : 'opacity-0'}`}>
               <button 
                 onClick={(e) => scrollRight(scrollRefJobs, e)}
-                className="w-10 h-10 bg-white/90 backdrop-blur-sm shadow-md rounded-full flex items-center justify-center text-slate-600 pointer-events-auto mr-1 hover:text-blue-600 transition-colors"
+                className="w-8 h-8 bg-white/90 backdrop-blur-sm shadow-md rounded-full flex items-center justify-center text-slate-600 pointer-events-auto mr-1 hover:text-blue-600 transition-colors"
               >
-                <ChevronRight className="w-6 h-6" />
+                <ChevronRight className="w-5 h-5" />
               </button>
             </div>
           </div>
         </section>
 
         {/* 2. 직업 카테고리 (꽉 찬 박스 리스트) */}
-        <section className="px-6">
-          <div className="flex gap-6 border-b border-slate-200 mb-6">
+        <section className="px-5">
+          <div className="flex gap-5 border-b border-slate-200 mb-4">
             <button 
               onClick={() => setActiveCategory('recommended')} 
-              className={`pb-3 text-base font-bold transition-all border-b-2 ${activeCategory === 'recommended' ? 'text-blue-600 border-blue-600' : 'text-slate-400 border-transparent hover:text-slate-600'}`}
+              className={`pb-2.5 text-sm font-bold transition-all border-b-2 ${activeCategory === 'recommended' ? 'text-blue-600 border-blue-600' : 'text-slate-400 border-transparent hover:text-slate-600'}`}
             >
               AI 추천 직업
             </button>
             <button 
               onClick={() => setActiveCategory('popular')} 
-              className={`pb-3 text-base font-bold transition-all border-b-2 ${activeCategory === 'popular' ? 'text-blue-600 border-blue-600' : 'text-slate-400 border-transparent hover:text-slate-600'}`}
+              className={`pb-2.5 text-sm font-bold transition-all border-b-2 ${activeCategory === 'popular' ? 'text-blue-600 border-blue-600' : 'text-slate-400 border-transparent hover:text-slate-600'}`}
             >
               인기 직업
             </button>
           </div>
 
-          <div className="space-y-3">
+          <div className="space-y-2.5">
             {activeCategory === 'recommended' && recommendedJobs.map((job: string) => (
               <button 
                 key={job} 
                 onClick={() => setSelectedJob(getJobInfo(job))}
-                className="w-full bg-white hover:bg-slate-50 border border-slate-100 rounded-2xl p-5 flex justify-between items-center transition-all shadow-sm active:scale-[0.98]"
+                className="w-full bg-white hover:bg-slate-50 border border-slate-100 rounded-2xl p-4 flex justify-between items-center transition-all shadow-sm active:scale-[0.98]"
               >
-                <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 bg-emerald-50 rounded-full flex items-center justify-center text-emerald-600">
-                    <Sparkles className="w-5 h-5" />
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 bg-emerald-50 rounded-full flex items-center justify-center text-emerald-600">
+                    <Sparkles className="w-4 h-4" />
                   </div>
-                  <span className="text-slate-900 font-extrabold text-[17px]">{job}</span>
+                  <span className="text-slate-900 font-extrabold text-[15px]">{job}</span>
                 </div>
-                <ChevronRight className="w-6 h-6 text-slate-300" />
+                <ChevronRight className="w-5 h-5 text-slate-300" />
               </button>
             ))}
             {activeCategory === 'popular' && ['데이터 분석가', 'AI 프롬프트 엔지니어', 'UX/UI 디자이너'].map(job => (
               <button 
                 key={job} 
                 onClick={() => setSelectedJob(getJobInfo(job))}
-                className="w-full bg-white hover:bg-slate-50 border border-slate-100 rounded-2xl p-5 flex justify-between items-center transition-all shadow-sm active:scale-[0.98]"
+                className="w-full bg-white hover:bg-slate-50 border border-slate-100 rounded-2xl p-4 flex justify-between items-center transition-all shadow-sm active:scale-[0.98]"
               >
-                <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 bg-orange-50 rounded-full flex items-center justify-center text-orange-500">
-                    <Flame className="w-5 h-5" />
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 bg-orange-50 rounded-full flex items-center justify-center text-orange-500">
+                    <Flame className="w-4 h-4" />
                   </div>
-                  <span className="text-slate-900 font-extrabold text-[17px]">{job}</span>
+                  <span className="text-slate-900 font-extrabold text-[15px]">{job}</span>
                 </div>
-                <ChevronRight className="w-6 h-6 text-slate-300" />
+                <ChevronRight className="w-5 h-5 text-slate-300" />
               </button>
             ))}
           </div>
         </section>
 
         {/* 3. 현직자 리얼 VLOG (가로 스크롤) */}
-        <section className="px-6">
-          <h2 className="text-slate-900 font-extrabold text-xl mb-5 flex items-center gap-2">
-            <Video className="w-6 h-6 text-indigo-500" />
+        <section className="px-5">
+          <h2 className="text-slate-900 font-extrabold text-lg mb-4 flex items-center gap-1.5">
+            <Video className="w-5 h-5 text-indigo-500" />
             현직자 리얼 VLOG
           </h2>
-          <div className="relative">
-            <div className="flex gap-4 overflow-x-auto pb-6 snap-x hide-scrollbar pr-12" ref={scrollRefVlogs}>
+          <div className="relative group">
+            <div 
+              className="flex gap-3 overflow-x-auto pb-4 snap-x hide-scrollbar pr-12" 
+              ref={scrollRefVlogs}
+              onScroll={(e) => handleScroll(e, setCanScrollLeftVlogs, setCanScrollRightVlogs)}
+            >
               {vlogs.map((vlog: any) => (
                 <div 
                   key={vlog.id} 
@@ -207,67 +247,80 @@ export default function DashboardPage() {
                       window.open(vlog.videoUrl, '_blank');
                     }
                   }}
-                  className="w-[80%] max-w-[280px] h-44 bg-white rounded-3xl relative overflow-hidden flex-shrink-0 snap-center cursor-pointer group border border-slate-100 shadow-sm flex items-center justify-center"
+                  className="w-[80%] max-w-[260px] h-40 bg-white rounded-3xl relative overflow-hidden flex-shrink-0 snap-center cursor-pointer border border-slate-100 shadow-sm flex items-center justify-center group/card"
                 >
                   {vlog.thumbnailUrl ? (
-                    <img src={vlog.thumbnailUrl} alt={vlog.title} className="absolute inset-0 w-full h-full object-cover z-0 opacity-80 group-hover:scale-105 transition-transform duration-500" />
+                    <img src={vlog.thumbnailUrl} alt={vlog.title} className="absolute inset-0 w-full h-full object-cover z-0 opacity-80 group-hover/card:scale-105 transition-transform duration-500" />
                   ) : (
                     <div className="absolute inset-0 bg-slate-100 z-0"></div>
                   )}
 
-                  <div className="absolute bottom-0 left-0 right-0 p-5 bg-gradient-to-t from-slate-900/90 via-slate-900/40 to-transparent z-20">
-                    <p className="text-white text-[15px] font-bold line-clamp-2 drop-shadow-md leading-snug">{vlog.title}</p>
+                  <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-slate-900/90 via-slate-900/40 to-transparent z-20">
+                    <p className="text-white text-sm font-bold line-clamp-2 drop-shadow-md leading-snug">{vlog.title}</p>
                   </div>
 
                   {(!vlog.videoUrl) ? (
-                    <div className="absolute inset-0 bg-white/40 backdrop-blur-sm flex flex-col items-center justify-center group-hover:bg-white/50 transition-colors z-10">
-                      <div className="w-14 h-14 bg-white rounded-full shadow-sm flex items-center justify-center text-slate-800">
-                        <Lock className="w-6 h-6" />
+                    <div className="absolute inset-0 bg-white/40 backdrop-blur-sm flex flex-col items-center justify-center group-hover/card:bg-white/50 transition-colors z-10">
+                      <div className="w-12 h-12 bg-white rounded-full shadow-sm flex items-center justify-center text-slate-800">
+                        <Lock className="w-5 h-5" />
                       </div>
                     </div>
                   ) : (
-                    <div className="absolute inset-0 flex items-center justify-center z-10 opacity-0 group-hover:opacity-100 transition-opacity bg-black/20 backdrop-blur-sm">
-                      <div className="w-16 h-16 bg-white/90 backdrop-blur rounded-full flex items-center justify-center text-blue-600 shadow-sm">
-                        <PlayCircle className="w-10 h-10" />
+                    <div className="absolute inset-0 flex items-center justify-center z-10 opacity-0 group-hover/card:opacity-100 transition-opacity bg-black/20 backdrop-blur-sm">
+                      <div className="w-14 h-14 bg-white/90 backdrop-blur rounded-full flex items-center justify-center text-blue-600 shadow-sm">
+                        <PlayCircle className="w-8 h-8" />
                       </div>
                     </div>
                   )}
                   
-                  <div className="absolute top-4 right-4 z-20">
+                  <div className="absolute top-3 right-3 z-20">
                     {vlog.isPremium ? (
-                      <span className="bg-amber-50 text-amber-600 text-xs font-bold px-3 py-1.5 rounded-full shadow-sm">Premium</span>
+                      <span className="bg-amber-50 text-amber-600 text-[10px] font-bold px-2.5 py-1 rounded-full shadow-sm border border-amber-100/50">Premium</span>
                     ) : (
-                      <span className="bg-blue-50 text-blue-600 text-xs font-bold px-3 py-1.5 rounded-full shadow-sm">Free</span>
+                      <span className="bg-blue-50 text-blue-600 text-[10px] font-bold px-2.5 py-1 rounded-full shadow-sm border border-blue-100/50">Free</span>
                     )}
                   </div>
                 </div>
               ))}
             </div>
-            {/* 우측 그라데이션 및 화살표 오버레이 */}
-            <div className="absolute right-0 top-0 bottom-6 w-20 bg-gradient-to-l from-slate-50 via-slate-50/80 to-transparent flex items-center justify-end pointer-events-none z-10">
+            
+            {/* 좌측 화살표 */}
+            {canScrollLeftVlogs && (
+              <div className="absolute left-0 top-0 bottom-4 w-12 flex items-center justify-start pointer-events-none z-10">
+                <button 
+                  onClick={(e) => scrollLeft(scrollRefVlogs, e)}
+                  className="w-8 h-8 bg-white/90 backdrop-blur-sm shadow-md rounded-full flex items-center justify-center text-slate-600 pointer-events-auto ml-1 hover:text-blue-600 transition-colors"
+                >
+                  <ChevronLeft className="w-5 h-5" />
+                </button>
+              </div>
+            )}
+            
+            {/* 우측 화살표 */}
+            <div className={`absolute right-0 top-0 bottom-4 w-16 bg-gradient-to-l from-slate-50 via-slate-50/80 to-transparent flex items-center justify-end pointer-events-none z-10 transition-opacity ${canScrollRightVlogs ? 'opacity-100' : 'opacity-0'}`}>
               <button 
                 onClick={(e) => scrollRight(scrollRefVlogs, e)}
-                className="w-10 h-10 bg-white/90 backdrop-blur-sm shadow-md rounded-full flex items-center justify-center text-slate-600 pointer-events-auto mr-1 hover:text-blue-600 transition-colors"
+                className="w-8 h-8 bg-white/90 backdrop-blur-sm shadow-md rounded-full flex items-center justify-center text-slate-600 pointer-events-auto mr-1 hover:text-blue-600 transition-colors"
               >
-                <ChevronRight className="w-6 h-6" />
+                <ChevronRight className="w-5 h-5" />
               </button>
             </div>
           </div>
         </section>
 
         {/* 4. 시크릿 자격증 로드맵 (Accordion UI) */}
-        <section className="px-6 pb-10">
-          <h2 className="text-slate-900 font-extrabold text-xl mb-5 flex items-center gap-2">
-            <MapIcon className="w-6 h-6 text-emerald-500" />
+        <section className="px-5 pb-8">
+          <h2 className="text-slate-900 font-extrabold text-lg mb-4 flex items-center gap-1.5">
+            <MapIcon className="w-5 h-5 text-emerald-500" />
             시크릿 합격 로드맵
           </h2>
-          <div className="relative bg-white rounded-3xl border border-slate-100 overflow-hidden shadow-sm">
-            <div className={`p-6 ${!isSubscribed ? 'h-56 filter blur-[8px] opacity-40 overflow-hidden pointer-events-none' : ''}`}>
-              <h3 className="text-slate-900 font-extrabold mb-6 text-lg tracking-tight">
+          <div className="relative bg-white rounded-[2rem] border border-slate-100 overflow-hidden shadow-sm">
+            <div className={`p-5 ${!isSubscribed ? 'h-48 filter blur-[6px] opacity-40 overflow-hidden pointer-events-none' : ''}`}>
+              <h3 className="text-slate-900 font-extrabold mb-5 text-[15px] tracking-tight">
                 <span className="text-blue-600">{userPersona ? `[${userPersona.jobs[0]}]` : '네카라쿠배'}</span> 합격 커리큘럼
               </h3>
               
-              <div className="space-y-3">
+              <div className="space-y-2.5">
                 {roadmapSteps.map(step => (
                   <div key={step.step} className="border border-slate-100 rounded-2xl bg-slate-50 overflow-hidden transition-all">
                     <button 
@@ -275,15 +328,15 @@ export default function DashboardPage() {
                       className="w-full p-4 flex items-center justify-between bg-white hover:bg-slate-50 transition-colors"
                     >
                       <div className="flex items-center gap-3 text-left">
-                        <div className="w-8 h-8 rounded-full bg-blue-50 text-blue-600 font-extrabold flex items-center justify-center text-xs shadow-sm border border-blue-100 shrink-0">
+                        <div className="w-7 h-7 rounded-full bg-blue-50 text-blue-600 font-extrabold flex items-center justify-center text-xs shadow-sm border border-blue-100 shrink-0">
                           {step.step}
                         </div>
-                        <span className="font-extrabold text-slate-900 text-[15px]">{step.title}</span>
+                        <span className="font-extrabold text-slate-900 text-sm">{step.title}</span>
                       </div>
-                      <ChevronDown className={`w-5 h-5 text-slate-400 transition-transform duration-300 shrink-0 ${expandedStep === step.step ? 'rotate-180' : ''}`} />
+                      <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform duration-300 shrink-0 ${expandedStep === step.step ? 'rotate-180' : ''}`} />
                     </button>
                     {expandedStep === step.step && (
-                      <div className="p-5 pt-3 bg-white text-slate-500 text-sm leading-relaxed text-justify break-keep whitespace-pre-wrap animate-in fade-in slide-in-from-top-2 duration-200 border-t border-slate-50">
+                      <div className="p-4 pt-2 bg-white text-slate-500 text-xs leading-relaxed text-justify break-keep whitespace-pre-wrap animate-in fade-in slide-in-from-top-2 duration-200 border-t border-slate-50">
                         {step.desc}
                       </div>
                     )}
@@ -296,9 +349,9 @@ export default function DashboardPage() {
               <div className="absolute inset-0 flex items-center justify-center bg-slate-50/50 backdrop-blur-[2px] z-10">
                 <button 
                   onClick={() => setShowPremiumModal(true)}
-                  className="bg-white text-slate-900 px-6 py-4 rounded-2xl font-extrabold shadow-sm border border-slate-100 transform transition-transform active:scale-95 flex items-center gap-3"
+                  className="bg-white text-slate-900 px-5 py-3.5 rounded-2xl font-extrabold text-sm shadow-sm border border-slate-100 transform transition-transform active:scale-95 flex items-center gap-2"
                 >
-                  <span className="bg-slate-100 w-8 h-8 rounded-full flex items-center justify-center text-slate-800"><Unlock className="w-4 h-4" /></span> 
+                  <span className="bg-slate-100 w-7 h-7 rounded-full flex items-center justify-center text-slate-800"><Unlock className="w-3.5 h-3.5" /></span> 
                   프리미엄 멤버십 열람
                 </button>
               </div>
@@ -310,21 +363,21 @@ export default function DashboardPage() {
       {/* 프리미엄 결제 모달 */}
       {showPremiumModal && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm">
-          <div className="bg-white rounded-[2rem] w-full max-w-sm p-8 relative shadow-2xl animate-in fade-in zoom-in duration-200 border border-slate-100">
-            <button onClick={() => setShowPremiumModal(false)} className="absolute top-6 right-6 text-slate-400 hover:text-slate-600 bg-slate-50 w-8 h-8 rounded-full flex items-center justify-center font-bold">
-              <X className="w-5 h-5" />
+          <div className="bg-white rounded-[2rem] w-full max-w-sm p-6 relative shadow-2xl animate-in fade-in zoom-in duration-200 border border-slate-100">
+            <button onClick={() => setShowPremiumModal(false)} className="absolute top-5 right-5 text-slate-400 hover:text-slate-600 bg-slate-50 w-8 h-8 rounded-full flex items-center justify-center font-bold">
+              <X className="w-4 h-4" />
             </button>
             <div className="text-center mt-2">
-              <div className="flex justify-center mb-6">
-                <div className="w-16 h-16 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center">
-                  <Gem className="w-8 h-8" />
+              <div className="flex justify-center mb-5">
+                <div className="w-14 h-14 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center">
+                  <Gem className="w-7 h-7" />
                 </div>
               </div>
-              <h2 className="text-2xl font-extrabold text-slate-900 mb-3 tracking-tight">프리미엄 멤버십</h2>
-              <p className="text-slate-500 text-sm mb-8 leading-relaxed font-medium break-keep whitespace-pre-wrap">월 9,900원 구독하고 AI가 맞춤 추천하는 시크릿 합격 로드맵과 현직자 VLOG를 모두 확인하세요!</p>
+              <h2 className="text-xl font-extrabold text-slate-900 mb-2 tracking-tight">프리미엄 멤버십</h2>
+              <p className="text-slate-500 text-xs mb-6 leading-relaxed font-medium break-keep whitespace-pre-wrap">월 9,900원 구독하고 AI가 맞춤 추천하는 시크릿 합격 로드맵과 현직자 VLOG를 모두 확인하세요!</p>
               <button 
                 onClick={handleSubscribe}
-                className="w-full py-4 bg-blue-600 text-white font-extrabold text-lg rounded-2xl shadow-sm active:scale-95 transition-transform"
+                className="w-full py-3.5 bg-blue-600 text-white font-extrabold text-[15px] rounded-2xl shadow-sm active:scale-95 transition-transform"
               >
                 지금 바로 구독하기
               </button>
@@ -337,34 +390,34 @@ export default function DashboardPage() {
       {selectedJob && (
         <div className="fixed inset-0 z-[100] flex items-end justify-center bg-slate-900/40 backdrop-blur-sm sm:items-center p-0 sm:p-4 animate-in fade-in duration-200">
           <div className="bg-white sm:border border-slate-100 rounded-t-[2rem] sm:rounded-3xl w-full max-w-[480px] sm:max-w-sm max-h-[85vh] overflow-y-auto relative shadow-2xl animate-in slide-in-from-bottom duration-300">
-            <div className="sticky top-0 bg-white/90 backdrop-blur-md pb-4 pt-8 px-8 border-b border-slate-100 z-10 flex justify-between items-center">
-              <h3 className="text-2xl font-extrabold text-slate-900 tracking-tight">{selectedJob.title}</h3>
+            <div className="sticky top-0 bg-white/90 backdrop-blur-md pb-4 pt-6 px-6 border-b border-slate-100 z-10 flex justify-between items-center">
+              <h3 className="text-xl font-extrabold text-slate-900 tracking-tight">{selectedJob.title}</h3>
               <button onClick={() => setSelectedJob(null)} className="w-8 h-8 bg-slate-100 rounded-full flex items-center justify-center text-slate-500 hover:text-slate-900">
-                <X className="w-5 h-5" />
+                <X className="w-4 h-4" />
               </button>
             </div>
             
-            <div className="p-8">
-              <ul className="space-y-6 text-sm">
+            <div className="p-6">
+              <ul className="space-y-5 text-sm">
                 <li>
-                  <span className="flex items-center gap-2 text-slate-500 mb-3 text-xs font-bold uppercase tracking-wider"><Building2 className="w-4 h-4" /> 주요 채용 회사</span>
-                  <span className="text-slate-700 font-bold block bg-slate-50 p-4 rounded-2xl border border-slate-100">{selectedJob.companies}</span>
+                  <span className="flex items-center gap-2 text-slate-500 mb-2 text-xs font-bold uppercase tracking-wider"><Building2 className="w-3.5 h-3.5" /> 주요 채용 회사</span>
+                  <span className="text-slate-700 font-bold block bg-slate-50 p-4 rounded-2xl border border-slate-100 text-sm">{selectedJob.companies}</span>
                 </li>
                 <li>
-                  <span className="flex items-center gap-2 text-slate-500 mb-3 text-xs font-bold uppercase tracking-wider"><Clock className="w-4 h-4" /> 상세 실무 내용</span>
-                  <span className="text-slate-600 font-medium leading-relaxed bg-slate-50 p-4 rounded-2xl block border border-slate-100 break-keep whitespace-pre-wrap">{selectedJob.tasks}</span>
+                  <span className="flex items-center gap-2 text-slate-500 mb-2 text-xs font-bold uppercase tracking-wider"><Clock className="w-3.5 h-3.5" /> 상세 실무 내용</span>
+                  <span className="text-slate-600 font-medium leading-relaxed bg-slate-50 p-4 rounded-2xl block border border-slate-100 text-sm break-keep whitespace-pre-wrap">{selectedJob.tasks}</span>
                 </li>
                 <li>
-                  <span className="flex items-center gap-2 text-slate-500 mb-3 text-xs font-bold uppercase tracking-wider"><Gem className="w-4 h-4" /> 평균 연봉</span>
-                  <span className="text-blue-600 font-extrabold text-lg bg-blue-50 p-4 rounded-2xl block border border-blue-100">{selectedJob.salary}</span>
+                  <span className="flex items-center gap-2 text-slate-500 mb-2 text-xs font-bold uppercase tracking-wider"><Gem className="w-3.5 h-3.5" /> 평균 연봉</span>
+                  <span className="text-blue-600 font-extrabold text-[15px] bg-blue-50 p-4 rounded-2xl block border border-blue-100">{selectedJob.salary}</span>
                 </li>
                 <li>
-                  <span className="flex items-center gap-2 text-slate-500 mb-3 text-xs font-bold uppercase tracking-wider"><LinkIcon className="w-4 h-4" /> 필요 자격증/스킬</span>
-                  <span className="text-slate-600 font-medium leading-relaxed block bg-slate-50 p-4 rounded-2xl border border-slate-100 break-keep whitespace-pre-wrap">{selectedJob.certs}</span>
+                  <span className="flex items-center gap-2 text-slate-500 mb-2 text-xs font-bold uppercase tracking-wider"><LinkIcon className="w-3.5 h-3.5" /> 필요 자격증/스킬</span>
+                  <span className="text-slate-600 font-medium leading-relaxed block bg-slate-50 p-4 rounded-2xl border border-slate-100 text-sm break-keep whitespace-pre-wrap">{selectedJob.certs}</span>
                 </li>
               </ul>
               
-              <button onClick={() => setSelectedJob(null)} className="w-full mt-8 py-4 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-2xl transition-colors shadow-sm">
+              <button onClick={() => setSelectedJob(null)} className="w-full mt-6 py-4 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-2xl transition-colors shadow-sm text-sm">
                 닫기
               </button>
             </div>
