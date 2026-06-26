@@ -2,15 +2,16 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { Home, MessageSquare, Map, User } from 'lucide-react';
 
 export function BottomNav() {
   const pathname = usePathname();
 
   const navItems = [
-    { href: '/dashboard', label: '홈', icon: '🏠' },
-    { href: '/community', label: '커뮤니티', icon: '💬' },
-    { href: '/matching', label: '체험매칭', icon: '🤝' },
-    { href: '/mypage', label: '마이페이지', icon: '👤' },
+    { href: '/dashboard', label: '홈', icon: Home },
+    { href: '/community', label: '커뮤니티', icon: MessageSquare },
+    { href: '/matching', label: '체험매칭', icon: Map },
+    { href: '/mypage', label: '마이페이지', icon: User },
   ];
 
   return (
@@ -18,6 +19,7 @@ export function BottomNav() {
       <ul className="flex justify-around items-center h-16">
         {navItems.map((item) => {
           const isActive = pathname.startsWith(item.href);
+          const Icon = item.icon;
           return (
             <li key={item.href} className="flex-1">
               <Link 
@@ -26,8 +28,8 @@ export function BottomNav() {
                   isActive ? 'text-primary' : 'text-slate-400 hover:text-slate-600'
                 }`}
               >
-                <span className="text-xl">{item.icon}</span>
-                <span className="text-[10px] font-medium">{item.label}</span>
+                <Icon className="w-6 h-6" strokeWidth={isActive ? 2.5 : 2} />
+                <span className="text-[10px] font-bold tracking-wide">{item.label}</span>
               </Link>
             </li>
           );

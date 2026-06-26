@@ -4,8 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { PersonaCard } from '@/components/PersonaCard';
 import { updateUserPersona } from '@/app/actions/auth';
-
-
+import { CheckCircle2, ChevronRight } from 'lucide-react';
 
 export default function TestPage() {
   const router = useRouter();
@@ -96,15 +95,22 @@ export default function TestPage() {
   if (isFinished && resultPersona) {
     return (
       <main className="flex flex-col items-center justify-center min-h-full p-6 bg-slate-50 relative overflow-y-auto">
-        <h2 className="text-2xl font-bold text-slate-900 mb-8 text-center">분석이 완료되었습니다! 🎉</h2>
+        <div className="flex flex-col items-center mb-8">
+          <div className="w-16 h-16 bg-primary/10 text-primary rounded-full flex items-center justify-center mb-4">
+            <CheckCircle2 className="w-8 h-8" />
+          </div>
+          <h2 className="text-2xl font-extrabold text-slate-900 text-center tracking-tight">분석이 완료되었습니다</h2>
+        </div>
+        
         <PersonaCard 
           name={resultPersona.name}
           description={resultPersona.desc}
           jobs={resultPersona.jobs}
         />
+        
         <button 
           onClick={() => router.push('/dashboard')}
-          className="mt-10 w-full py-4 bg-white hover:bg-slate-100 border border-slate-600 text-slate-600 rounded-xl font-bold transition-colors"
+          className="mt-10 w-full py-4 bg-white hover:bg-slate-50 border border-slate-100 shadow-sm text-slate-900 rounded-2xl font-bold transition-all active:scale-[0.98]"
         >
           내 맞춤형 진로 맵 보러가기
         </button>
@@ -117,16 +123,16 @@ export default function TestPage() {
   return (
     <main className="flex flex-col min-h-full p-6 bg-slate-50">
       {/* Progress Bar */}
-      <div className="w-full bg-white rounded-full h-2 mb-12 mt-8">
+      <div className="w-full bg-slate-200 rounded-full h-2 mb-12 mt-8">
         <div 
           className="bg-primary h-2 rounded-full transition-all duration-300"
           style={{ width: `${((currentStep + 1) / QUIZ_QUESTIONS.length) * 100}%` }}
         ></div>
       </div>
 
-      <div className="flex-1 flex flex-col justify-center">
-        <h2 className="text-sm text-primary font-bold tracking-widest mb-4">QUESTION {currentStep + 1} <span className="text-slate-500 text-xs">/ 10</span></h2>
-        <h1 className="text-2xl font-bold text-slate-900 leading-snug mb-10">
+      <div className="flex-1 flex flex-col justify-center pb-20">
+        <h2 className="text-sm text-primary font-bold tracking-widest mb-4">QUESTION {currentStep + 1} <span className="text-slate-400 text-xs">/ 10</span></h2>
+        <h1 className="text-2xl font-extrabold text-slate-900 leading-snug mb-10 tracking-tight">
           {currentQ.question}
         </h1>
 
@@ -135,10 +141,13 @@ export default function TestPage() {
             <button
               key={opt.id}
               onClick={() => handleAnswer(opt.id)}
-              className="w-full text-left p-5 rounded-2xl bg-white hover:bg-white border border-slate-100 hover:border-primary/50 text-slate-700 transition-all duration-200 active:scale-[0.98]"
+              className="w-full p-6 rounded-3xl bg-white border border-slate-100 hover:border-primary/30 hover:bg-primary/5 text-slate-700 transition-all duration-200 active:scale-[0.98] shadow-sm flex items-center justify-between group"
             >
-              <span className="inline-block w-8 font-mono text-slate-500">{opt.id}.</span>
-              {opt.text}
+              <div className="flex items-center text-left">
+                <span className="inline-block w-8 font-extrabold text-slate-400 group-hover:text-primary">{opt.id}</span>
+                <span className="font-semibold text-[15px]">{opt.text}</span>
+              </div>
+              <ChevronRight className="w-5 h-5 text-slate-300 group-hover:text-primary transition-colors" />
             </button>
           ))}
         </div>

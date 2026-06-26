@@ -15,14 +15,14 @@ export function PersonaCard({ name, description, jobs }: PersonaCardProps) {
   };
 
   return (
-    <div className="relative overflow-hidden rounded-2xl bg-white/5 border border-white/10 backdrop-blur-md p-8 shadow-2xl max-w-sm w-full mx-auto transform transition-all hover:scale-[1.02] duration-300">
+    <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-slate-800 to-slate-900 border border-slate-700 p-8 shadow-[0_8px_30px_rgb(0,0,0,0.12)] max-w-sm w-full mx-auto transform transition-all hover:scale-[1.02] duration-300">
       {/* Decorative gradient blob */}
-      <div className="absolute -top-24 -right-24 w-48 h-48 bg-primary rounded-full mix-blend-multiply filter blur-3xl opacity-20"></div>
+      <div className="absolute -top-24 -right-24 w-48 h-48 bg-primary rounded-full mix-blend-plus-lighter filter blur-3xl opacity-30"></div>
       
       <div className="relative z-10">
-        <h2 className="text-primary text-sm font-semibold tracking-wider uppercase mb-2">당신의 커리어 페르소나</h2>
-        <h3 className="text-3xl font-bold text-white mb-4">{name}</h3>
-        <p className="text-slate-300 mb-6 leading-relaxed">
+        <h2 className="text-primary text-sm font-bold tracking-wider uppercase mb-2">당신의 커리어 페르소나</h2>
+        <h3 className="text-3xl font-extrabold text-white mb-4">{name}</h3>
+        <p className="text-slate-200 mb-6 leading-relaxed font-medium">
           {description}
         </p>
         

@@ -21,3 +21,12 @@ body {
   font-family: var(--font-sans), Arial, Helvetica, sans-serif;
   @apply antialiased;
 }
+
+/* 스크롤바 숨기기 (가로 스크롤 영역용) */
+.hide-scrollbar {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+.hide-scrollbar::-webkit-scrollbar {
+  display: none; /* Chrome, Safari and Opera */
+}
