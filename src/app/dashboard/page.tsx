@@ -7,6 +7,24 @@ import Link from 'next/link';
 type JobCategory = 'recommended' | 'popular';
 
 const ROADMAP_DATA: Record<string, any[]> = {
+  '백엔드 개발자': [
+    { step: 1, title: '언어 기초 및 자료구조', desc: 'Java/Python 기초 문법과 객체지향 프로그래밍(OOP), 기본 자료구조를 완벽히 숙지하세요.' },
+    { step: 2, title: '프레임워크 및 DB', desc: 'Spring Boot 또는 Node.js 프레임워크를 익히고, MySQL 등 관계형 데이터베이스 연동과 SQL 쿼리 최적화를 배웁니다.' },
+    { step: 3, title: '실전 API 서버 구축', desc: 'RESTful API를 설계하고, JWT 인증/인가 로직이 포함된 실제 게시판이나 커머스 백엔드를 구축해 보세요.' },
+    { step: 4, title: '클라우드 배포 및 최적화', desc: 'AWS EC2 또는 Docker를 활용해 서버를 배포하고, 대규모 트래픽을 가정한 성능 테스트 결과를 깃허브 포트폴리오로 정리하세요.' }
+  ],
+  '테크니컬 라이터': [
+    { step: 1, title: '기술 문서 구조 이해', desc: 'API 명세서, 사용자 매뉴얼, 사내 가이드라인 등 다양한 기술 문서의 구조와 목적을 파악하세요.' },
+    { step: 2, title: '마크다운 및 작성 툴 마스터', desc: 'Markdown 문법을 완벽히 익히고, Notion, Confluence, Docusaurus 등 문서화 툴 활용법을 숙지하세요.' },
+    { step: 3, title: '오픈소스 기여 및 번역', desc: '해외 유명 기술 블로그 아티클을 번역 및 요약하거나, 오픈소스 프로젝트의 공식 문서 오류를 수정(PR)해 보세요.' },
+    { step: 4, title: '기술 블로그 포트폴리오 구축', desc: '개발자들이 이해하기 쉽게 복잡한 아키텍처나 코드를 설명하는 나만의 기술 블로그 시리즈를 작성하세요.' }
+  ],
+  '프리세일즈': [
+    { step: 1, title: 'IT 인프라/솔루션 기초 지식', desc: '자사 및 경쟁사의 IT 솔루션, 클라우드 아키텍처, 서버 네트워크 기초 지식을 영업 관점에서 이해하세요.' },
+    { step: 2, title: '제안서(RFP) 분석 및 작성법', desc: '고객사의 요구사항(RFP)을 분석하고, 자사 솔루션의 강점을 논리적으로 풀어낸 B2B 제안서를 기획해 보세요.' },
+    { step: 3, title: '프레젠테이션 스킬 업', desc: '작성한 제안서를 바탕으로 고객사 임원진을 설득하기 위한 모의 피칭 스크립트를 작성하고 발표를 훈련하세요.' },
+    { step: 4, title: '실전 B2B 영업 시뮬레이션', desc: '특정 산업군을 타겟으로 가상의 솔루션 도입 시나리오를 세우고, 이의제기(Objection) 극복 전략을 정리하세요.' }
+  ],
   '데이터 분석가': [
     { step: 1, title: '데이터 분석 기초 수강', desc: 'SQL 기초 문법과 파이썬 데이터 전처리 라이브러리(Pandas, NumPy)를 익히세요.' },
     { step: 2, title: '미니 프로젝트 진행', desc: 'Kaggle이나 공공 데이터를 활용하여 EDA(탐색적 데이터 분석)를 수행하고 인사이트를 도출해보세요.' },
@@ -37,12 +55,6 @@ const ROADMAP_DATA: Record<string, any[]> = {
     { step: 3, title: '클론 디자인 및 개선', desc: '기존 유명 앱들의 화면을 똑같이 따라 만들어보고, UX 측면에서 불편한 점을 찾아 개선해 보세요.' },
     { step: 4, title: '문제 해결 중심 포트폴리오', desc: '단순히 예쁜 화면이 아닌, 왜 이 버튼을 여기에 배치했는지 논리적 근거가 담긴 포트폴리오를 제작하세요.' }
   ],
-  '백엔드 개발자': [
-    { step: 1, title: '언어 및 프레임워크 기초', desc: 'Java(Spring) 또는 Node.js(Express/NestJS) 중 하나를 선택하여 기본 문법과 구조를 익히세요.' },
-    { step: 2, title: '데이터베이스 설계', desc: '관계형 데이터베이스(MySQL)의 설계와 쿼리 작성법을 배우고, ORM의 사용법을 익히세요.' },
-    { step: 3, title: 'API 서버 구축', desc: 'RESTful API를 설계하고 인증(JWT) 및 권한 처리 로직이 포함된 서버를 직접 구축해 보세요.' },
-    { step: 4, title: 'AWS 배포 및 성능 개선', desc: '클라우드 환경(AWS)에 배포해보고, 대용량 트래픽을 가정하여 쿼리 최적화 등 성능 개선 경험을 정리하세요.' }
-  ]
 };
 
 const DEFAULT_ROADMAP = [

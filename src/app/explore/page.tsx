@@ -1,7 +1,7 @@
 'use client';
 
-import { useState } from 'react';
-import { ArrowLeft, Terminal, Megaphone, Palette, Briefcase, Calculator, PenTool, Database, Search, X, Building2, Gem, Target, MousePointer2 } from 'lucide-react';
+import { useState, useRef } from 'react';
+import { ArrowLeft, Terminal, Megaphone, Palette, Briefcase, Calculator, PenTool, Database, Search, X, Building2, Gem, Target, MousePointer2, ChevronLeft, ChevronRight } from 'lucide-react';
 import Link from 'next/link';
 
 type Category = '전체' | 'IT/개발' | '기획/마케팅' | '디자인/창작' | '경영/지원';
@@ -24,6 +24,30 @@ export default function ExplorePage() {
   const [activeCategory, setActiveCategory] = useState<Category>('전체');
   const [selectedJob, setSelectedJob] = useState<any>(null);
 
+  const scrollRefTabs = useRef<HTMLDivElement>(null);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(true);
+
+  const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
+    const { scrollLeft, scrollWidth, clientWidth } = e.currentTarget;
+    setCanScrollLeft(scrollLeft > 0);
+    setCanScrollRight(Math.ceil(scrollLeft + clientWidth) < scrollWidth);
+  };
+
+  const scrollRight = (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (scrollRefTabs.current) {
+      scrollRefTabs.current.scrollBy({ left: 150, behavior: 'smooth' });
+    }
+  };
+
+  const scrollLeft = (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (scrollRefTabs.current) {
+      scrollRefTabs.current.scrollBy({ left: -150, behavior: 'smooth' });
+    }
+  };
+
   const filteredJobs = activeCategory === '전체' 
     ? EXPLORE_JOBS 
     : EXPLORE_JOBS.filter(job => job.category === activeCategory);
@@ -40,13 +64,17 @@ export default function ExplorePage() {
       </header>
 
       {/* Tabs */}
-      <div className="bg-white px-5 pt-4 border-b border-slate-100 sticky top-[73px] z-20">
-        <div className="flex gap-4 overflow-x-auto hide-scrollbar pb-3">
+      <div className="bg-white px-5 pt-4 border-b border-slate-100 sticky top-[73px] z-20 relative">
+        <div 
+          className="flex gap-4 overflow-x-auto hide-scrollbar pb-3 pr-8"
+          ref={scrollRefTabs}
+          onScroll={handleScroll}
+        >
           {CATEGORIES.map(category => (
             <button
               key={category}
               onClick={() => setActiveCategory(category)}
-              className={`whitespace-nowrap px-4 py-2 rounded-full text-sm font-bold transition-all active:scale-95 ${
+              className={`whitespace-nowrap px-4 py-2 rounded-full text-sm font-bold transition-all active:scale-95 flex-shrink-0 ${
                 activeCategory === category 
                   ? 'bg-slate-900 text-white shadow-sm' 
                   : 'bg-slate-100 text-slate-500 hover:bg-slate-200'
@@ -55,6 +83,28 @@ export default function ExplorePage() {
               {category}
             </button>
           ))}
+        </div>
+        
+        {/* 좌측 화살표 */}
+        {canScrollLeft && (
+          <div className="absolute left-0 top-0 bottom-3 w-12 bg-gradient-to-r from-white via-white/80 to-transparent flex items-center justify-start pointer-events-none z-10 pl-2">
+            <button 
+              onClick={scrollLeft}
+              className="w-7 h-7 bg-white/90 backdrop-blur-sm shadow-md rounded-full flex items-center justify-center text-slate-600 pointer-events-auto hover:text-slate-900 transition-colors border border-slate-100"
+            >
+              <ChevronLeft className="w-4 h-4" />
+            </button>
+          </div>
+        )}
+        
+        {/* 우측 화살표 */}
+        <div className={`absolute right-0 top-0 bottom-3 w-12 bg-gradient-to-l from-white via-white/80 to-transparent flex items-center justify-end pointer-events-none z-10 pr-2 transition-opacity duration-200 ${canScrollRight ? 'opacity-100' : 'opacity-0'}`}>
+          <button 
+            onClick={scrollRight}
+            className="w-7 h-7 bg-white/90 backdrop-blur-sm shadow-md rounded-full flex items-center justify-center text-slate-600 pointer-events-auto hover:text-slate-900 transition-colors border border-slate-100"
+          >
+            <ChevronRight className="w-4 h-4" />
+          </button>
         </div>
       </div>
 
