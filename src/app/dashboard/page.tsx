@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Flame, TrendingUp, Sparkles, Video, Lock, Unlock, Map as MapIcon, Gem, ChevronRight, ChevronDown, PlayCircle, Building2, Clock, Link as LinkIcon, X } from 'lucide-react';
 
 type JobCategory = 'recommended' | 'popular';
@@ -13,6 +13,17 @@ export default function DashboardPage() {
   const [userPersona, setUserPersona] = useState<any>(null);
   const [vlogs, setVlogs] = useState<any[]>([]);
   const [expandedStep, setExpandedStep] = useState<number | null>(null);
+
+  const scrollRefJobs = useRef<HTMLDivElement>(null);
+  const scrollRefVlogs = useRef<HTMLDivElement>(null);
+
+  const scrollRight = (ref: React.RefObject<HTMLDivElement | null>, e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (ref.current) {
+      ref.current.scrollBy({ left: 300, behavior: 'smooth' });
+    }
+  };
 
   useEffect(() => {
     let currentPersona = null;
@@ -83,8 +94,9 @@ export default function DashboardPage() {
     <main className="min-h-full pb-24 bg-slate-50 flex flex-col relative break-keep whitespace-pre-wrap">
       <header className="px-6 pt-10 pb-8 bg-white rounded-b-[2rem] shadow-sm border-b border-slate-100 z-10 relative overflow-hidden mb-8">
         <div className="absolute top-0 right-0 w-64 h-64 bg-blue-600/5 rounded-full filter blur-3xl -z-10 translate-x-1/3 -translate-y-1/3"></div>
-        <h1 className="text-3xl font-extrabold text-slate-900 mb-3 tracking-tight leading-tight">
-          {userPersona ? `${userPersona.name}님을 위한 탐색 허브` : '직무 탐색 허브'}
+        <h1 className="text-3xl font-extrabold text-slate-900 mb-3 tracking-tight leading-tight flex flex-col">
+          <span>{userPersona ? `${userPersona.name}님을 위한` : '당신을 위한'}</span>
+          <span>직무 탐색 허브</span>
         </h1>
         <p className="text-sm font-medium text-slate-500 leading-relaxed">
           {userPersona ? '나의 커리어 성향에 꼭 맞는 직무와 로드맵을 확인하세요.' : '요즘 뜨는 직무부터 숨겨진 꿀 직무까지 탐색해보세요.'}
@@ -99,26 +111,29 @@ export default function DashboardPage() {
             요새 뜨는 직업
           </h2>
           <div className="relative">
-            <div className="flex gap-4 overflow-x-auto pb-4 hide-scrollbar snap-x pr-12">
+            <div className="flex gap-4 overflow-x-auto pb-4 hide-scrollbar snap-x pr-12" ref={scrollRefJobs}>
               {TRENDING_JOBS.map((job, idx) => (
                 <div 
                   key={idx} 
                   onClick={() => setSelectedJob(getJobInfo(job))}
                   className="bg-white hover:bg-slate-50 border border-slate-100 transition-colors rounded-3xl p-6 w-[75%] max-w-[240px] snap-center flex-shrink-0 cursor-pointer relative shadow-sm"
                 >
-                  <div className="absolute -top-3 -left-3 w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-sm">
+                  <div className="absolute top-0 left-0 w-8 h-8 bg-blue-600 rounded-tl-3xl rounded-br-2xl flex items-center justify-center text-white font-bold text-sm shadow-sm">
                     {idx + 1}
                   </div>
-                  <TrendingUp className="w-8 h-8 text-blue-600 mb-3 mt-1" />
+                  <TrendingUp className="w-8 h-8 text-blue-600 mb-3 mt-2" />
                   <h3 className="text-slate-900 font-extrabold text-lg tracking-tight mb-2">{job}</h3>
                 </div>
               ))}
             </div>
             {/* 우측 그라데이션 및 화살표 오버레이 */}
-            <div className="absolute right-0 top-0 bottom-4 w-16 bg-gradient-to-l from-slate-50 to-transparent flex items-center justify-end pointer-events-none">
-              <div className="w-8 h-8 bg-white/80 backdrop-blur rounded-full shadow-sm flex items-center justify-center text-slate-400">
-                <ChevronRight className="w-5 h-5" />
-              </div>
+            <div className="absolute right-0 top-0 bottom-4 w-20 bg-gradient-to-l from-slate-50 via-slate-50/80 to-transparent flex items-center justify-end pointer-events-none z-10">
+              <button 
+                onClick={(e) => scrollRight(scrollRefJobs, e)}
+                className="w-10 h-10 bg-white/90 backdrop-blur-sm shadow-md rounded-full flex items-center justify-center text-slate-600 pointer-events-auto mr-1 hover:text-blue-600 transition-colors"
+              >
+                <ChevronRight className="w-6 h-6" />
+              </button>
             </div>
           </div>
         </section>
@@ -181,7 +196,7 @@ export default function DashboardPage() {
             현직자 리얼 VLOG
           </h2>
           <div className="relative">
-            <div className="flex gap-4 overflow-x-auto pb-6 snap-x hide-scrollbar pr-12">
+            <div className="flex gap-4 overflow-x-auto pb-6 snap-x hide-scrollbar pr-12" ref={scrollRefVlogs}>
               {vlogs.map((vlog: any) => (
                 <div 
                   key={vlog.id} 
@@ -229,10 +244,13 @@ export default function DashboardPage() {
               ))}
             </div>
             {/* 우측 그라데이션 및 화살표 오버레이 */}
-            <div className="absolute right-0 top-0 bottom-6 w-16 bg-gradient-to-l from-slate-50 to-transparent flex items-center justify-end pointer-events-none">
-              <div className="w-8 h-8 bg-white/80 backdrop-blur rounded-full shadow-sm flex items-center justify-center text-slate-400">
-                <ChevronRight className="w-5 h-5" />
-              </div>
+            <div className="absolute right-0 top-0 bottom-6 w-20 bg-gradient-to-l from-slate-50 via-slate-50/80 to-transparent flex items-center justify-end pointer-events-none z-10">
+              <button 
+                onClick={(e) => scrollRight(scrollRefVlogs, e)}
+                className="w-10 h-10 bg-white/90 backdrop-blur-sm shadow-md rounded-full flex items-center justify-center text-slate-600 pointer-events-auto mr-1 hover:text-blue-600 transition-colors"
+              >
+                <ChevronRight className="w-6 h-6" />
+              </button>
             </div>
           </div>
         </section>
@@ -256,7 +274,7 @@ export default function DashboardPage() {
                       onClick={() => setExpandedStep(expandedStep === step.step ? null : step.step)} 
                       className="w-full p-4 flex items-center justify-between bg-white hover:bg-slate-50 transition-colors"
                     >
-                      <div className="flex items-center gap-3">
+                      <div className="flex items-center gap-3 text-left">
                         <div className="w-8 h-8 rounded-full bg-blue-50 text-blue-600 font-extrabold flex items-center justify-center text-xs shadow-sm border border-blue-100 shrink-0">
                           {step.step}
                         </div>
