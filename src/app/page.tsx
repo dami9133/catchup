@@ -1,8 +1,8 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { FormEvent, useState } from 'react';
-import { signupUser } from '@/app/actions/auth';
+import { FormEvent, useState, useEffect } from 'react';
+import { signupUser, loginUser } from '@/app/actions/auth';
 
 type ViewMode = 'login' | 'snsSignup' | 'emailSignup' | 'snsDetail';
 
@@ -15,9 +15,49 @@ export default function LoginPage() {
   const [selectedProvider, setSelectedProvider] = useState<string>('');
   const [isAgreed, setIsAgreed] = useState(false);
 
-  const handleLogin = (e: FormEvent) => {
+  // 이메일 분리 상태
+  const [emailId, setEmailId] = useState('');
+  const [emailDomain, setEmailDomain] = useState('');
+  const [customDomain, setCustomDomain] = useState('');
+  
+  // 비밀번호 상태 및 유효성
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  
+  const passwordRegex = /^(?=.*[!@#$%^&*(),.?":{}|<>]).{8,}$/;
+  const isPasswordValid = password === '' || passwordRegex.test(password);
+  const isPasswordMatch = confirmPassword === '' || password === confirmPassword;
+
+  // 전체 이메일 문자열 만들기
+  const getFullEmail = () => {
+    const domain = emailDomain === 'custom' ? customDomain : emailDomain;
+    return `${emailId}@${domain}`;
+  };
+
+  const handleLoginAction = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    router.push('/test');
+    setIsSubmitting(true);
+
+    const formData = new FormData(e.currentTarget);
+    
+    try {
+      const result = await loginUser(formData);
+      if (result.success && result.user) {
+        // 로컬 스토리지에 세션 저장
+        localStorage.setItem('userEmail', result.user.email);
+        localStorage.setItem('userName', result.user.name);
+        localStorage.setItem('userLevel', String(result.user.level));
+        localStorage.setItem('subStatus', result.user.sub_status);
+        
+        router.push('/dashboard');
+      } else {
+        alert(result.message);
+      }
+    } catch (error) {
+      alert('로그인 처리 중 문제가 발생했습니다.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleSnsClick = (provider: string) => {
@@ -25,13 +65,34 @@ export default function LoginPage() {
     setViewMode('snsDetail');
   };
 
-  const handleSignupAction = async (formData: FormData) => {
+  const handleSignupAction = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    
     if (!isAgreed) {
       alert('개인정보 수집 및 이용에 동의해야 합니다.');
       return;
     }
 
+    if (!isPasswordValid || password === '') {
+      alert('비밀번호 유효성 조건을 만족해주세요.');
+      return;
+    }
+
+    if (viewMode === 'emailSignup' && !isPasswordMatch) {
+      alert('비밀번호가 일치하지 않습니다.');
+      return;
+    }
+
     setIsSubmitting(true);
+    
+    // FormData 구성
+    const formElement = e.currentTarget;
+    const formData = new FormData(formElement);
+    
+    if (viewMode === 'emailSignup') {
+      formData.set('email', getFullEmail());
+    }
+
     try {
       const result = await signupUser(formData);
       if (result.success) {
@@ -66,16 +127,16 @@ export default function LoginPage() {
         {viewMode === 'login' && (
           // 1. 로그인 모드
           <>
-            <form onSubmit={handleLogin} className="w-full space-y-4">
+            <form onSubmit={handleLoginAction} className="w-full space-y-4">
               <div>
-                <input type="email" placeholder="이메일 주소" required className="w-full bg-slate-800/50 border border-slate-700 rounded-xl px-4 py-3.5 text-white placeholder-slate-500 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all" />
+                <input name="email" type="email" placeholder="이메일 주소" required className="w-full bg-slate-800/50 border border-slate-700 rounded-xl px-4 py-3.5 text-white placeholder-slate-500 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all" />
               </div>
               <div>
-                <input type="password" placeholder="비밀번호" required className="w-full bg-slate-800/50 border border-slate-700 rounded-xl px-4 py-3.5 text-white placeholder-slate-500 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all" />
+                <input name="password" type="password" placeholder="비밀번호" required className="w-full bg-slate-800/50 border border-slate-700 rounded-xl px-4 py-3.5 text-white placeholder-slate-500 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all" />
               </div>
               
-              <button type="submit" className="w-full mt-6 py-4 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-white rounded-xl font-bold shadow-lg shadow-emerald-500/25 transition-transform active:scale-95">
-                로그인하고 시작하기
+              <button type="submit" disabled={isSubmitting} className="w-full mt-6 py-4 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-white rounded-xl font-bold shadow-lg shadow-emerald-500/25 transition-transform active:scale-95 disabled:opacity-50 flex items-center justify-center">
+                {isSubmitting ? <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin"></div> : '로그인하고 시작하기'}
               </button>
             </form>
 
@@ -128,10 +189,8 @@ export default function LoginPage() {
             <h2 className="text-xl font-bold text-white mb-2 text-center">{selectedProvider} 계정으로 가입</h2>
             <p className="text-sm text-slate-400 text-center mb-6">마지막으로 가입에 필요한 정보를 입력해주세요.</p>
             
-            <form action={handleSignupAction} className="w-full space-y-4">
-              {/* 서버 액션으로 Provider 정보 넘기기 위함 */}
+            <form onSubmit={handleSignupAction} className="w-full space-y-4">
               <input type="hidden" name="provider" value={selectedProvider} />
-
               <div>
                 <input name="name" type="text" placeholder="이름 (또는 닉네임)" required className="w-full bg-slate-800/50 border border-slate-700 rounded-xl px-4 py-3.5 text-white placeholder-slate-500 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all" />
               </div>
@@ -157,11 +216,7 @@ export default function LoginPage() {
                 disabled={!isAgreed || isSubmitting}
                 className="w-full mt-4 py-4 bg-primary hover:bg-primary-hover disabled:bg-slate-600 disabled:opacity-50 text-white rounded-xl font-bold shadow-lg shadow-emerald-500/25 transition-transform active:scale-95 disabled:scale-100 flex items-center justify-center"
               >
-                {isSubmitting ? (
-                  <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                ) : (
-                  '가입 완료하고 성향 테스트하기'
-                )}
+                {isSubmitting ? <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin"></div> : '가입 완료하고 성향 테스트하기'}
               </button>
             </form>
             <div className="mt-6 text-sm text-slate-500 text-center">
@@ -176,16 +231,79 @@ export default function LoginPage() {
           // 3. 이메일 회원가입 모드
           <div className="w-full">
             <h2 className="text-xl font-bold text-white mb-6 text-center">이메일 회원가입</h2>
-            <form action={handleSignupAction} className="w-full space-y-4">
+            <form onSubmit={handleSignupAction} className="w-full space-y-4">
               <div>
                 <input name="name" type="text" placeholder="이름" required className="w-full bg-slate-800/50 border border-slate-700 rounded-xl px-4 py-3.5 text-white placeholder-slate-500 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all" />
               </div>
               <div className="flex gap-2">
-                <input name="age" type="number" placeholder="나이" required min="10" max="100" className="w-1/3 bg-slate-800/50 border border-slate-700 rounded-xl px-4 py-3.5 text-white placeholder-slate-500 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all" />
-                <input name="email" type="email" placeholder="이메일 주소" required className="w-2/3 bg-slate-800/50 border border-slate-700 rounded-xl px-4 py-3.5 text-white placeholder-slate-500 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all" />
+                <input name="age" type="number" placeholder="나이" required min="10" max="100" className="w-1/4 bg-slate-800/50 border border-slate-700 rounded-xl px-4 py-3.5 text-white placeholder-slate-500 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all" />
+                
+                {/* 이메일 ID & 도메인 드롭다운 */}
+                <div className="flex flex-1 gap-2 items-center">
+                  <input 
+                    type="text" 
+                    value={emailId}
+                    onChange={(e) => setEmailId(e.target.value)}
+                    placeholder="이메일" 
+                    required 
+                    className="w-1/2 bg-slate-800/50 border border-slate-700 rounded-xl px-4 py-3.5 text-white placeholder-slate-500 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all" 
+                  />
+                  <span className="text-slate-500">@</span>
+                  <div className="w-1/2 flex flex-col gap-2">
+                    <select 
+                      value={emailDomain}
+                      onChange={(e) => setEmailDomain(e.target.value)}
+                      required
+                      className="w-full bg-slate-800/50 border border-slate-700 rounded-xl px-4 py-3.5 text-white focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all appearance-none"
+                    >
+                      <option value="" disabled hidden>도메인 선택</option>
+                      <option value="naver.com">naver.com</option>
+                      <option value="gmail.com">gmail.com</option>
+                      <option value="daum.net">daum.net</option>
+                      <option value="kakao.com">kakao.com</option>
+                      <option value="custom">직접 입력</option>
+                    </select>
+                    {emailDomain === 'custom' && (
+                      <input 
+                        type="text" 
+                        value={customDomain}
+                        onChange={(e) => setCustomDomain(e.target.value)}
+                        placeholder="직접 입력" 
+                        required 
+                        className="w-full bg-slate-800/50 border border-slate-700 rounded-xl px-4 py-3.5 text-white placeholder-slate-500 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all" 
+                      />
+                    )}
+                  </div>
+                </div>
               </div>
+              
               <div>
-                <input name="password" type="password" placeholder="비밀번호 (8자 이상)" required minLength={8} className="w-full bg-slate-800/50 border border-slate-700 rounded-xl px-4 py-3.5 text-white placeholder-slate-500 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all" />
+                <input 
+                  name="password" 
+                  type="password" 
+                  placeholder="비밀번호 (8자 이상, 특수문자 포함)" 
+                  required 
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className={`w-full bg-slate-800/50 border ${!isPasswordValid ? 'border-red-500' : 'border-slate-700'} rounded-xl px-4 py-3.5 text-white placeholder-slate-500 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all`} 
+                />
+                {!isPasswordValid && (
+                  <p className="text-red-500 text-xs mt-2 ml-1 font-medium">비밀번호는 8자 이상이며, 특수문자를 최소 1개 이상 포함해야 합니다.</p>
+                )}
+              </div>
+
+              <div>
+                <input 
+                  type="password" 
+                  placeholder="비밀번호 확인" 
+                  required 
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  className={`w-full bg-slate-800/50 border ${!isPasswordMatch ? 'border-red-500' : 'border-slate-700'} rounded-xl px-4 py-3.5 text-white placeholder-slate-500 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all`} 
+                />
+                {!isPasswordMatch && (
+                  <p className="text-red-500 text-xs mt-2 ml-1 font-medium">비밀번호가 일치하지 않습니다.</p>
+                )}
               </div>
               
               <div className="mt-6 p-4 bg-slate-800/50 border border-slate-700 rounded-xl flex items-start gap-3">
@@ -203,14 +321,10 @@ export default function LoginPage() {
 
               <button 
                 type="submit" 
-                disabled={!isAgreed || isSubmitting}
+                disabled={!isAgreed || isSubmitting || !isPasswordValid || !isPasswordMatch || password === ''}
                 className="w-full mt-4 py-4 bg-primary hover:bg-primary-hover disabled:bg-slate-600 disabled:opacity-50 text-white rounded-xl font-bold shadow-lg shadow-emerald-500/25 transition-transform active:scale-95 disabled:scale-100 flex items-center justify-center"
               >
-                {isSubmitting ? (
-                  <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                ) : (
-                  '가입 완료하고 성향 테스트하기'
-                )}
+                {isSubmitting ? <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin"></div> : '가입 완료하고 성향 테스트하기'}
               </button>
             </form>
             <div className="mt-6 text-sm text-slate-500 text-center">

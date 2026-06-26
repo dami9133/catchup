@@ -1,6 +1,6 @@
 'use server';
 
-import { appendRow, updateRowByEmail } from '@/lib/googleSheets';
+import { appendRow, updateRowByEmail, findUserByEmail } from '@/lib/googleSheets';
 
 export async function signupUser(formData: FormData) {
   try {
@@ -8,6 +8,13 @@ export async function signupUser(formData: FormData) {
     const age = formData.get('age') as string;
     const email = formData.get('email') as string || `sns_${Date.now()}@example.com`;
     const provider = formData.get('provider') as string || 'Email';
+    const password = formData.get('password') as string || ''; // 실제 서비스에선 해싱 권장
+
+    // 중복 이메일 검사
+    const existingUser = await findUserByEmail(email);
+    if (existingUser) {
+      return { success: false, message: '이미 가입된 이메일입니다.' };
+    }
 
     // 타임스탬프 기반 임시 ID 생성
     const id = `usr_${Date.now()}`;
@@ -17,6 +24,7 @@ export async function signupUser(formData: FormData) {
       id: id,
       email: email,
       name: `[${provider}] ${name}`, // SNS 식별 용이하게
+      password: password, // 비밀번호 필드 추가
       age: age,
       persona_type: '미검사', // 테스트 전이므로
       level: 1,
@@ -44,6 +52,31 @@ export async function signupUser(formData: FormData) {
     }
 
     return { success: false, message: errorMessage };
+  }
+}
+
+export async function loginUser(formData: FormData) {
+  try {
+    const email = formData.get('email') as string;
+    const password = formData.get('password') as string;
+
+    const user = await findUserByEmail(email);
+
+    if (!user) {
+      return { success: false, message: '아이디 또는 비밀번호가 잘못되었습니다.' };
+    }
+
+    if (user.password !== password) {
+      return { success: false, message: '아이디 또는 비밀번호가 잘못되었습니다.' };
+    }
+
+    // 인증 성공 시 비밀번호를 제외한 유저 정보 반환
+    const { password: _, ...safeUser } = user;
+    return { success: true, user: safeUser };
+
+  } catch (error) {
+    console.error('Login Error:', error);
+    return { success: false, message: '로그인 처리 중 문제가 발생했습니다.' };
   }
 }
 

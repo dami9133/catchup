@@ -88,3 +88,29 @@ export async function updateRowByEmail(tabName: string, email: string, updates: 
     throw error;
   }
 }
+
+export async function findUserByEmail(email: string) {
+  try {
+    const sheet = await getGoogleSheet('Users');
+    const rows = await sheet.getRows();
+    const targetRow = rows.find(row => row.get('email') === email);
+    
+    if (targetRow) {
+      return {
+        id: targetRow.get('id'),
+        email: targetRow.get('email'),
+        name: targetRow.get('name'),
+        password: targetRow.get('password'), // 비밀번호 필드 추가
+        persona_type: targetRow.get('persona_type'),
+        level: targetRow.get('level'),
+        exp_score: targetRow.get('exp_score'),
+        sub_status: targetRow.get('sub_status')
+      };
+    }
+    return null;
+  } catch (error) {
+    console.error('Error finding user in Google Sheets:', error);
+    throw error;
+  }
+}
+
