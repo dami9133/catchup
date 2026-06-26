@@ -51,18 +51,18 @@ export default function CommunityPage() {
   }, [activeTab]);
 
   return (
-    <main className="min-h-full pb-20 bg-background flex flex-col relative">
+    <main className="min-h-full pb-20 bg-slate-50 flex flex-col relative">
       <header className="p-6 pb-2">
-        <h1 className="text-2xl font-bold text-white mb-6">커뮤니티</h1>
+        <h1 className="text-2xl font-bold text-slate-900 mb-6">커뮤니티</h1>
         
         {/* Tabs */}
-        <div className="flex border-b border-slate-700 overflow-x-auto whitespace-nowrap hide-scrollbar">
+        <div className="flex border-b border-slate-100 overflow-x-auto whitespace-nowrap hide-scrollbar">
           <button
             onClick={() => setActiveTab('jobInfo')}
             className={`px-4 pb-3 text-sm font-bold transition-colors border-b-2 ${
               activeTab === 'jobInfo' 
                 ? 'text-primary border-primary' 
-                : 'text-slate-500 border-transparent hover:text-slate-400'
+                : 'text-slate-500 border-transparent hover:text-slate-500'
             }`}
           >
             취준/이직 정보
@@ -72,7 +72,7 @@ export default function CommunityPage() {
             className={`px-4 pb-3 text-sm font-bold transition-colors border-b-2 ${
               activeTab === 'counseling' 
                 ? 'text-primary border-primary' 
-                : 'text-slate-500 border-transparent hover:text-slate-400'
+                : 'text-slate-500 border-transparent hover:text-slate-500'
             }`}
           >
             익명 고민 상담
@@ -82,7 +82,7 @@ export default function CommunityPage() {
             className={`px-4 pb-3 text-sm font-bold transition-colors border-b-2 ${
               activeTab === 'startupCamp' 
                 ? 'text-primary border-primary' 
-                : 'text-slate-500 border-transparent hover:text-slate-400'
+                : 'text-slate-500 border-transparent hover:text-slate-500'
             }`}
           >
             창업지원 공고 🚀
@@ -99,12 +99,12 @@ export default function CommunityPage() {
                 <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
               </div>
             ) : startupError ? (
-              <div className="p-6 bg-slate-800/50 rounded-xl text-center border border-slate-700">
-                <p className="text-slate-400 text-sm">{startupError}</p>
+              <div className="p-6 bg-white rounded-xl text-center border border-slate-100">
+                <p className="text-slate-500 text-sm">{startupError}</p>
               </div>
             ) : startupData.length === 0 ? (
-              <div className="p-6 bg-slate-800/50 rounded-xl text-center border border-slate-700">
-                <p className="text-slate-400 text-sm">현재 접수 중인 창업지원 공고가 없습니다.</p>
+              <div className="p-6 bg-white rounded-xl text-center border border-slate-100">
+                <p className="text-slate-500 text-sm">현재 접수 중인 창업지원 공고가 없습니다.</p>
               </div>
             ) : (
               <div className="space-y-4">
@@ -112,7 +112,7 @@ export default function CommunityPage() {
                   <button 
                     key={item.id} 
                     onClick={() => setSelectedStartup(item)}
-                    className="w-full text-left p-5 bg-slate-800/40 hover:bg-slate-800/80 rounded-2xl border border-slate-700 hover:border-primary/50 transition-all group block"
+                    className="w-full text-left p-5 bg-white hover:bg-white rounded-2xl border border-slate-100 hover:border-primary/50 transition-all group block"
                   >
                     <div className="flex justify-between items-start mb-2">
                       <span className="px-2.5 py-1 bg-emerald-500/10 text-emerald-400 text-[10px] font-bold rounded-lg border border-emerald-500/20">
@@ -122,10 +122,10 @@ export default function CommunityPage() {
                         마감: {item.endDate}
                       </span>
                     </div>
-                    <h3 className="text-white font-bold text-base leading-tight mb-3 group-hover:text-primary transition-colors">
+                    <h3 className="text-slate-900 font-bold text-base leading-tight mb-3 group-hover:text-primary transition-colors">
                       {item.title}
                     </h3>
-                    <div className="flex items-center text-xs text-slate-400">
+                    <div className="flex items-center text-xs text-slate-500">
                       <span className="truncate">🏢 {item.agency}</span>
                     </div>
                   </button>
@@ -135,8 +135,8 @@ export default function CommunityPage() {
           </div>
         ) : (
           MOCK_POSTS[activeTab].map((post) => (
-            <li key={post.id} className="border-b border-slate-800/50 hover:bg-slate-800/20 transition-colors cursor-pointer p-5">
-              <h3 className="text-slate-200 font-medium text-base mb-2">{post.title}</h3>
+            <li key={post.id} className="border-b border-slate-200/50 hover:bg-white transition-colors cursor-pointer p-5">
+              <h3 className="text-slate-700 font-medium text-base mb-2">{post.title}</h3>
               <div className="flex items-center text-xs text-slate-500 gap-3">
                 <span>{post.time}</span>
                 <span className="flex items-center gap-1">
@@ -158,22 +158,22 @@ export default function CommunityPage() {
       {/* 창업지원 공고 상세 모달 */}
       {selectedStartup && (
         <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm p-0 sm:p-4 animate-in fade-in duration-200">
-          <div className="bg-slate-900 border-t border-slate-700 sm:border rounded-t-3xl sm:rounded-2xl w-full max-w-[480px] sm:max-w-sm max-h-[85vh] overflow-y-auto relative shadow-2xl animate-in slide-in-from-bottom duration-300">
-            <div className="sticky top-0 bg-slate-900/90 backdrop-blur pb-4 pt-6 px-6 border-b border-slate-800 z-10 flex justify-between items-start">
+          <div className="bg-slate-50 border-t border-slate-100 sm:border rounded-t-3xl sm:rounded-2xl w-full max-w-[480px] sm:max-w-sm max-h-[85vh] overflow-y-auto relative shadow-2xl animate-in slide-in-from-bottom duration-300">
+            <div className="sticky top-0 bg-slate-50 backdrop-blur pb-4 pt-6 px-6 border-b border-slate-200 z-10 flex justify-between items-start">
               <div className="pr-4">
                 <span className="inline-block px-2.5 py-1 bg-emerald-500/20 text-emerald-400 text-[10px] font-bold rounded-lg border border-emerald-500/30 mb-3">
                   {selectedStartup.category}
                 </span>
-                <h3 className="text-xl font-bold text-white leading-tight">{selectedStartup.title}</h3>
+                <h3 className="text-xl font-bold text-slate-900 leading-tight">{selectedStartup.title}</h3>
               </div>
-              <button onClick={() => setSelectedStartup(null)} className="w-8 h-8 shrink-0 bg-slate-800 rounded-full flex items-center justify-center text-slate-400 hover:text-white transition-colors">✕</button>
+              <button onClick={() => setSelectedStartup(null)} className="w-8 h-8 shrink-0 bg-white rounded-full flex items-center justify-center text-slate-500 hover:text-slate-900 transition-colors">✕</button>
             </div>
             
             <div className="p-6">
               <ul className="space-y-6 text-sm">
                 <li>
                   <span className="block text-slate-500 mb-2 text-xs font-bold uppercase">주관 기관</span>
-                  <span className="text-slate-200 leading-relaxed bg-slate-800/50 p-3 rounded-lg block font-medium flex items-center gap-2">
+                  <span className="text-slate-700 leading-relaxed bg-white p-3 rounded-lg block font-medium flex items-center gap-2">
                     <span className="text-lg">🏢</span> {selectedStartup.agency}
                   </span>
                 </li>
@@ -196,7 +196,7 @@ export default function CommunityPage() {
                 </a>
                 <button 
                   onClick={() => setSelectedStartup(null)} 
-                  className="w-full py-4 bg-slate-800 hover:bg-slate-700 text-white font-bold rounded-xl transition-colors"
+                  className="w-full py-4 bg-white hover:bg-slate-100 text-slate-600 font-bold rounded-xl transition-colors"
                 >
                   닫기
                 </button>

@@ -1,16 +1,12 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Noto_Sans_KR } from "next/font/google";
 import "./globals.css";
 import { NavigationWrapper } from "@/components/NavigationWrapper";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const notoSansKR = Noto_Sans_KR({
+  variable: "--font-noto-sans",
   subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+  weight: ["400", "500", "700", "900"],
 });
 
 export const metadata: Metadata = {
@@ -33,9 +29,9 @@ export default function RootLayout({
   return (
     <html lang="ko">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-gray-900 flex justify-center`}
+        className={`${notoSansKR.variable} antialiased bg-slate-100 flex justify-center`}
       >
-        <div className="w-full max-w-[480px] h-[100dvh] bg-background shadow-2xl relative overflow-hidden flex flex-col">
+        <div className="w-full max-w-[480px] h-[100dvh] bg-white shadow-2xl relative overflow-hidden flex flex-col border-x border-slate-200">
           <NavigationWrapper>
             {children}
           </NavigationWrapper>

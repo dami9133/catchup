@@ -1,10 +1,10 @@
 @import "tailwindcss";
 
 :root {
-  --background: #0F172A; /* Navy */
-  --foreground: #F8FAFC; /* Light Slate */
-  --primary: #10B981;    /* Emerald */
-  --primary-hover: #059669;
+  --background: #FFFFFF; /* White */
+  --foreground: #0F172A; /* Slate 900 */
+  --primary: #A855F7;    /* Neon Purple 500 */
+  --primary-hover: #9333EA; /* Purple 600 */
 }
 
 @theme inline {
@@ -12,8 +12,7 @@
   --color-foreground: var(--foreground);
   --color-primary: var(--primary);
   --color-primary-hover: var(--primary-hover);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-noto-sans);
 }
 
 body {

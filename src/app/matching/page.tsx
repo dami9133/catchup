@@ -39,17 +39,17 @@ export default function MatchingPage() {
   const [expandedId, setExpandedId] = useState<number | null>(null);
 
   return (
-    <main className="min-h-full pb-20 bg-background flex flex-col">
+    <main className="min-h-full pb-20 bg-slate-50 flex flex-col">
       <header className="p-6 pb-4">
-        <h1 className="text-2xl font-bold text-white mb-2">체험학습 매칭 🤝</h1>
-        <p className="text-sm text-slate-400">기업의 리얼한 실무를 직접 경험하고 직무 적성을 확인하세요.</p>
+        <h1 className="text-2xl font-bold text-slate-900 mb-2">체험학습 매칭 🤝</h1>
+        <p className="text-sm text-slate-500">기업의 리얼한 실무를 직접 경험하고 직무 적성을 확인하세요.</p>
       </header>
 
       <div className="px-6 space-y-4">
         {MATCHING_DATA.map((item) => (
           <div 
             key={item.id} 
-            className="bg-slate-800/80 border border-slate-700 rounded-2xl overflow-hidden transition-all duration-300 shadow-lg"
+            className="bg-white border border-slate-100 rounded-2xl overflow-hidden transition-all duration-300 shadow-lg"
           >
             {/* 요약 카드 영역 (클릭 시 토글) */}
             <div 
@@ -60,7 +60,7 @@ export default function MatchingPage() {
                 <span className="text-primary font-bold text-sm bg-primary/10 px-2 py-0.5 rounded">{item.company}</span>
                 {item.isNew && <span className="text-xs bg-red-500 text-white font-bold px-2 py-0.5 rounded-full animate-pulse">NEW</span>}
               </div>
-              <h3 className="text-lg font-bold text-white mb-1 line-clamp-2">{item.title}</h3>
+              <h3 className="text-lg font-bold text-slate-900 mb-1 line-clamp-2">{item.title}</h3>
               <p className="text-xs text-slate-500 flex justify-between items-center mt-2">
                 <span>{item.period}</span>
                 <span className={`transform transition-transform duration-300 ${expandedId === item.id ? 'rotate-180' : ''}`}>▼</span>
@@ -69,23 +69,23 @@ export default function MatchingPage() {
 
             {/* 상세 정보 영역 (확장 시 노출) */}
             <div 
-              className={`bg-slate-900/50 px-5 border-t border-slate-700/50 transition-all duration-300 ease-in-out overflow-hidden ${
+              className={`bg-slate-50 px-5 border-t border-slate-100/50 transition-all duration-300 ease-in-out overflow-hidden ${
                 expandedId === item.id ? 'max-h-[400px] py-5 opacity-100' : 'max-h-0 py-0 opacity-0'
               }`}
             >
               <ul className="space-y-4 text-sm">
                 <li>
                   <span className="text-emerald-400 font-bold block mb-1">어떤 일?</span>
-                  <span className="text-slate-300">{item.task}</span>
+                  <span className="text-slate-600">{item.task}</span>
                 </li>
                 <li className="grid grid-cols-2 gap-4">
                   <div>
                     <span className="text-emerald-400 font-bold block mb-1">어떤 나이?</span>
-                    <span className="text-slate-300">{item.age}</span>
+                    <span className="text-slate-600">{item.age}</span>
                   </div>
                   <div>
                     <span className="text-emerald-400 font-bold block mb-1">원하는 사람?</span>
-                    <span className="text-slate-300">{item.persona}</span>
+                    <span className="text-slate-600">{item.persona}</span>
                   </div>
                 </li>
               </ul>

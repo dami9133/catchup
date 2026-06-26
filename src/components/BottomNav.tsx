@@ -14,7 +14,7 @@ export function BottomNav() {
   ];
 
   return (
-    <nav className="absolute bottom-0 w-full bg-slate-900 border-t border-slate-800 pb-safe z-50">
+    <nav className="absolute bottom-0 w-full bg-white/90 backdrop-blur-md border-t border-slate-100 shadow-[0_-8px_30px_rgb(0,0,0,0.04)] pb-safe z-50">
       <ul className="flex justify-around items-center h-16">
         {navItems.map((item) => {
           const isActive = pathname.startsWith(item.href);
@@ -23,7 +23,7 @@ export function BottomNav() {
               <Link 
                 href={item.href}
                 className={`flex flex-col items-center justify-center w-full h-full space-y-1 transition-colors ${
-                  isActive ? 'text-primary' : 'text-slate-500 hover:text-slate-300'
+                  isActive ? 'text-primary' : 'text-slate-400 hover:text-slate-600'
                 }`}
               >
                 <span className="text-xl">{item.icon}</span>

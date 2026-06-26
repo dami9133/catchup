@@ -95,8 +95,8 @@ export default function TestPage() {
 
   if (isFinished && resultPersona) {
     return (
-      <main className="flex flex-col items-center justify-center min-h-full p-6 bg-background relative overflow-y-auto">
-        <h2 className="text-2xl font-bold text-white mb-8 text-center">분석이 완료되었습니다! 🎉</h2>
+      <main className="flex flex-col items-center justify-center min-h-full p-6 bg-slate-50 relative overflow-y-auto">
+        <h2 className="text-2xl font-bold text-slate-900 mb-8 text-center">분석이 완료되었습니다! 🎉</h2>
         <PersonaCard 
           name={resultPersona.name}
           description={resultPersona.desc}
@@ -104,7 +104,7 @@ export default function TestPage() {
         />
         <button 
           onClick={() => router.push('/dashboard')}
-          className="mt-10 w-full py-4 bg-slate-800 hover:bg-slate-700 border border-slate-600 text-white rounded-xl font-bold transition-colors"
+          className="mt-10 w-full py-4 bg-white hover:bg-slate-100 border border-slate-600 text-slate-600 rounded-xl font-bold transition-colors"
         >
           내 맞춤형 진로 맵 보러가기
         </button>
@@ -115,9 +115,9 @@ export default function TestPage() {
   const currentQ = QUIZ_QUESTIONS[currentStep];
 
   return (
-    <main className="flex flex-col min-h-full p-6 bg-background">
+    <main className="flex flex-col min-h-full p-6 bg-slate-50">
       {/* Progress Bar */}
-      <div className="w-full bg-slate-800 rounded-full h-2 mb-12 mt-8">
+      <div className="w-full bg-white rounded-full h-2 mb-12 mt-8">
         <div 
           className="bg-primary h-2 rounded-full transition-all duration-300"
           style={{ width: `${((currentStep + 1) / QUIZ_QUESTIONS.length) * 100}%` }}
@@ -126,7 +126,7 @@ export default function TestPage() {
 
       <div className="flex-1 flex flex-col justify-center">
         <h2 className="text-sm text-primary font-bold tracking-widest mb-4">QUESTION {currentStep + 1} <span className="text-slate-500 text-xs">/ 10</span></h2>
-        <h1 className="text-2xl font-bold text-white leading-snug mb-10">
+        <h1 className="text-2xl font-bold text-slate-900 leading-snug mb-10">
           {currentQ.question}
         </h1>
 
@@ -135,7 +135,7 @@ export default function TestPage() {
             <button
               key={opt.id}
               onClick={() => handleAnswer(opt.id)}
-              className="w-full text-left p-5 rounded-2xl bg-slate-800/50 hover:bg-slate-800 border border-slate-700 hover:border-primary/50 text-slate-200 transition-all duration-200 active:scale-[0.98]"
+              className="w-full text-left p-5 rounded-2xl bg-white hover:bg-white border border-slate-100 hover:border-primary/50 text-slate-700 transition-all duration-200 active:scale-[0.98]"
             >
               <span className="inline-block w-8 font-mono text-slate-500">{opt.id}.</span>
               {opt.text}

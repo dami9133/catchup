@@ -78,17 +78,17 @@ export default function MyPage() {
   };
 
   return (
-    <main className="min-h-full pb-20 bg-background flex flex-col p-6 overflow-y-auto relative">
+    <main className="min-h-full pb-20 bg-slate-50 flex flex-col p-6 overflow-y-auto relative">
       <header className="mb-6 flex justify-between items-center">
-        <h1 className="text-2xl font-bold text-white">마이페이지</h1>
-        <span className="bg-slate-800 text-slate-300 text-xs px-3 py-1 rounded-full border border-slate-700">
+        <h1 className="text-2xl font-bold text-slate-900">마이페이지</h1>
+        <span className="bg-white text-slate-600 text-xs px-3 py-1 rounded-full border border-slate-100">
           {isSubscribed ? 'Premium 💎' : 'Free 플랜'}
         </span>
       </header>
 
       {/* 나의 페르소나 */}
       <section className="mb-8">
-        <h2 className="text-white font-bold mb-4 flex items-center gap-2">
+        <h2 className="text-slate-900 font-bold mb-4 flex items-center gap-2">
           <span>👑</span> 나의 커리어 페르소나
         </h2>
         <PersonaCard 
@@ -101,17 +101,17 @@ export default function MyPage() {
       {/* 나의 퀘스트 및 EXP */}
       <section className="mb-8">
         <div className="flex justify-between items-end mb-4">
-          <h2 className="text-white font-bold flex items-center gap-2">
+          <h2 className="text-slate-900 font-bold flex items-center gap-2">
             <span>🎯</span> 커리어 성장 퀘스트
           </h2>
           <div className="text-right">
-            <p className="text-xs text-slate-400 mb-1">현재 EXP</p>
+            <p className="text-xs text-slate-500 mb-1">현재 EXP</p>
             <p className="text-xl font-extrabold text-primary">{questExp} <span className="text-sm font-normal text-slate-500">/ 500</span></p>
           </div>
         </div>
         
         {/* EXP 바 */}
-        <div className="w-full bg-slate-800 rounded-full h-2 mb-4">
+        <div className="w-full bg-white rounded-full h-2 mb-4">
           <div 
             className="bg-primary h-2 rounded-full transition-all duration-500"
             style={{ width: `${(questExp / 500) * 100}%` }}
@@ -119,7 +119,7 @@ export default function MyPage() {
         </div>
 
         {currentQuest ? (
-          <div className="bg-slate-800/50 rounded-xl p-4 border border-slate-700 flex justify-between items-center shadow-inner relative overflow-hidden">
+          <div className="bg-white rounded-xl p-4 border border-slate-100 flex justify-between items-center shadow-inner relative overflow-hidden">
             {questState === 'completed' && (
               <div className="absolute inset-0 bg-emerald-500/20 backdrop-blur-[1px] flex items-center justify-center z-10 animate-in fade-in duration-300">
                 <span className="text-emerald-400 font-bold flex items-center gap-2 text-lg">
@@ -129,9 +129,9 @@ export default function MyPage() {
             )}
             <div>
               <div className="flex items-center gap-2 mb-1">
-                <span className="text-xs font-bold text-slate-400 bg-slate-800 px-2 py-0.5 rounded">STEP {activeQuestIndex + 1}</span>
+                <span className="text-xs font-bold text-slate-500 bg-white px-2 py-0.5 rounded">STEP {activeQuestIndex + 1}</span>
               </div>
-              <p className="text-white font-medium pr-2">{currentQuest.title}</p>
+              <p className="text-slate-900 font-medium pr-2">{currentQuest.title}</p>
               <p className="text-xs text-primary mt-1 font-bold">보상: {currentQuest.reward} EXP</p>
             </div>
             
@@ -156,25 +156,25 @@ export default function MyPage() {
             </div>
           </div>
         ) : (
-          <div className="bg-slate-800/50 rounded-xl p-6 border border-slate-700 text-center">
+          <div className="bg-white rounded-xl p-6 border border-slate-100 text-center">
             <span className="text-4xl block mb-2">🏆</span>
-            <p className="text-white font-bold text-lg">모든 퀘스트를 완료했습니다!</p>
-            <p className="text-slate-400 text-sm mt-1">곧 새로운 퀘스트가 추가될 예정입니다.</p>
+            <p className="text-slate-900 font-bold text-lg">모든 퀘스트를 완료했습니다!</p>
+            <p className="text-slate-500 text-sm mt-1">곧 새로운 퀘스트가 추가될 예정입니다.</p>
           </div>
         )}
       </section>
 
       {/* 멤버십 관리 영역 */}
       <section>
-        <h2 className="text-white font-bold mb-4 flex items-center gap-2">
+        <h2 className="text-slate-900 font-bold mb-4 flex items-center gap-2">
           <span>💳</span> 멤버십 관리
         </h2>
-        <div className="bg-slate-800 rounded-xl p-5 border border-slate-700">
+        <div className="bg-white rounded-xl p-5 border border-slate-100">
           <div className="flex justify-between items-center mb-2">
-            <p className="text-white font-medium">{isSubscribed ? '프리미엄 플랜 💎' : '베이직 플랜 (무료)'}</p>
+            <p className="text-slate-900 font-medium">{isSubscribed ? '프리미엄 플랜 💎' : '베이직 플랜 (무료)'}</p>
             {!isSubscribed && <button className="text-xs text-primary font-bold hover:underline">업그레이드</button>}
           </div>
-          <p className="text-xs text-slate-400 leading-relaxed">
+          <p className="text-xs text-slate-500 leading-relaxed">
             {isSubscribed 
               ? '프리미엄 멤버십 구독 중입니다. 현직자 시크릿 로드맵과 리얼 VLOG를 자유롭게 이용하세요.'
               : '프리미엄 멤버십으로 업그레이드하고\n현직자 시크릿 로드맵과 리얼 VLOG를 제한 없이 확인하세요.'}
@@ -185,19 +185,19 @@ export default function MyPage() {
       {/* 퀘스트 인증 모달 */}
       {showVerifyModal && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-          <div className="bg-slate-900 border border-slate-700 rounded-2xl w-full max-w-sm p-6 relative shadow-2xl animate-in fade-in zoom-in duration-200">
-            <button onClick={() => setShowVerifyModal(false)} className="absolute top-4 right-4 text-slate-400 hover:text-white">✕</button>
-            <h2 className="text-xl font-bold text-white mb-2">퀘스트 인증하기</h2>
-            <p className="text-sm text-slate-400 mb-6">{currentQuest?.title} 미션을 완료한 증빙 사진이나 캡쳐를 업로드해주세요.</p>
+          <div className="bg-slate-50 border border-slate-100 rounded-2xl w-full max-w-sm p-6 relative shadow-2xl animate-in fade-in zoom-in duration-200">
+            <button onClick={() => setShowVerifyModal(false)} className="absolute top-4 right-4 text-slate-500 hover:text-slate-900">✕</button>
+            <h2 className="text-xl font-bold text-slate-900 mb-2">퀘스트 인증하기</h2>
+            <p className="text-sm text-slate-500 mb-6">{currentQuest?.title} 미션을 완료한 증빙 사진이나 캡쳐를 업로드해주세요.</p>
             
-            <label className="border-2 border-dashed border-slate-600 rounded-xl p-8 mb-6 flex flex-col items-center justify-center text-slate-500 hover:bg-slate-800 hover:border-slate-500 transition-colors cursor-pointer relative overflow-hidden group">
+            <label className="border-2 border-dashed border-slate-600 rounded-xl p-8 mb-6 flex flex-col items-center justify-center text-slate-500 hover:bg-white hover:border-slate-500 transition-colors cursor-pointer relative overflow-hidden group">
               <input type="file" accept="image/*" className="absolute inset-0 opacity-0 cursor-pointer w-full h-full" onChange={handleFileChange} />
               
               {uploadedFileName ? (
                 <>
                   <span className="text-4xl mb-2">✅</span>
                   <span className="text-emerald-400 font-bold text-center break-all text-sm px-2">{uploadedFileName}</span>
-                  <span className="text-xs text-slate-500 mt-2 group-hover:text-slate-400 transition-colors">클릭하여 다른 파일 선택</span>
+                  <span className="text-xs text-slate-500 mt-2 group-hover:text-slate-500 transition-colors">클릭하여 다른 파일 선택</span>
                 </>
               ) : (
                 <>
@@ -209,7 +209,7 @@ export default function MyPage() {
 
             <button 
               onClick={handleVerifySubmit}
-              className={`w-full py-4 font-bold rounded-xl transition-all ${uploadedFileName ? 'bg-primary hover:bg-primary-hover text-white shadow-lg shadow-primary/20 active:scale-95' : 'bg-slate-800 text-slate-500 cursor-not-allowed'}`}
+              className={`w-full py-4 font-bold rounded-xl transition-all ${uploadedFileName ? 'bg-primary hover:bg-primary-hover text-white shadow-lg shadow-primary/20 active:scale-95' : 'bg-white text-slate-500 cursor-not-allowed'}`}
               disabled={!uploadedFileName}
             >
               업로드 완료 및 보상받기

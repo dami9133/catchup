@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { FormEvent, useState, useEffect } from 'react';
+import { FormEvent, useState } from 'react';
 import { signupUser, loginUser } from '@/app/actions/auth';
 
 type ViewMode = 'login' | 'snsSignup' | 'emailSignup' | 'snsDetail';
@@ -43,7 +43,6 @@ export default function LoginPage() {
     try {
       const result = await loginUser(formData);
       if (result.success && result.user) {
-        // 로컬 스토리지에 세션 저장
         localStorage.setItem('userEmail', result.user.email);
         localStorage.setItem('userName', result.user.name);
         localStorage.setItem('userLevel', String(result.user.level));
@@ -85,7 +84,6 @@ export default function LoginPage() {
 
     setIsSubmitting(true);
     
-    // FormData 구성
     const formElement = e.currentTarget;
     const formData = new FormData(formElement);
     
@@ -114,13 +112,13 @@ export default function LoginPage() {
   return (
     <main className="flex flex-col items-center justify-center min-h-full p-8 relative overflow-y-auto bg-background">
       {/* Background elements */}
-      <div className="absolute top-0 right-0 w-64 h-64 bg-primary/20 rounded-full mix-blend-multiply filter blur-3xl -z-10"></div>
+      <div className="absolute top-0 right-0 w-64 h-64 bg-primary/10 rounded-full mix-blend-multiply filter blur-3xl -z-10"></div>
       
       <div className="w-full flex-1 flex flex-col justify-center items-center py-10">
-        <h1 className="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-br from-emerald-400 to-teal-600 mb-2 tracking-tight">
+        <h1 className="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-br from-purple-500 to-indigo-600 mb-2 tracking-tight">
           CATCHUP
         </h1>
-        <p className="text-slate-400 mb-12 font-medium tracking-wide">
+        <p className="text-slate-500 mb-12 font-medium tracking-wide">
           불확실한 미래를 확신으로
         </p>
 
@@ -129,54 +127,54 @@ export default function LoginPage() {
           <>
             <form onSubmit={handleLoginAction} className="w-full space-y-4">
               <div>
-                <input name="email" type="email" placeholder="이메일 주소" required className="w-full bg-slate-800/50 border border-slate-700 rounded-xl px-4 py-3.5 text-white placeholder-slate-500 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all" />
+                <input name="email" type="email" placeholder="이메일 주소" required className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-4 py-4 text-slate-900 placeholder-slate-400 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary focus:bg-white transition-all shadow-sm" />
               </div>
               <div>
-                <input name="password" type="password" placeholder="비밀번호" required className="w-full bg-slate-800/50 border border-slate-700 rounded-xl px-4 py-3.5 text-white placeholder-slate-500 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all" />
+                <input name="password" type="password" placeholder="비밀번호" required className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-4 py-4 text-slate-900 placeholder-slate-400 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary focus:bg-white transition-all shadow-sm" />
               </div>
               
-              <button type="submit" disabled={isSubmitting} className="w-full mt-6 py-4 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-white rounded-xl font-bold shadow-lg shadow-emerald-500/25 transition-transform active:scale-95 disabled:opacity-50 flex items-center justify-center">
+              <button type="submit" disabled={isSubmitting} className="w-full mt-6 py-4 bg-primary hover:bg-primary-hover text-white rounded-2xl font-bold shadow-[0_8px_30px_rgb(168,85,247,0.2)] transition-transform active:scale-95 disabled:opacity-50 flex items-center justify-center">
                 {isSubmitting ? <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin"></div> : '로그인하고 시작하기'}
               </button>
             </form>
 
             <div className="mt-8 text-sm text-slate-500 flex gap-4">
-              <button className="hover:text-white transition-colors">비밀번호 찾기</button>
-              <span>|</span>
+              <button className="hover:text-slate-900 transition-colors font-medium">비밀번호 찾기</button>
+              <span className="text-slate-300">|</span>
               <button onClick={() => setViewMode('snsSignup')} className="hover:text-primary transition-colors font-medium">회원가입</button>
             </div>
           </>
         )}
 
         {viewMode === 'snsSignup' && (
-          // 2. SNS 회원가입 모드 (버튼만)
+          // 2. SNS 회원가입 모드
           <div className="w-full flex flex-col gap-3">
-            <button onClick={() => handleSnsClick('Kakao')} className="w-full py-4 bg-[#FEE500] text-black rounded-xl font-bold flex items-center justify-center gap-3 transition-transform active:scale-95">
+            <button onClick={() => handleSnsClick('Kakao')} className="w-full py-4 bg-[#FEE500] text-black rounded-2xl font-bold flex items-center justify-center gap-3 transition-transform active:scale-95 shadow-sm border border-[#FEE500]">
               <span>💬</span> 카카오로 시작하기
             </button>
-            <button onClick={() => handleSnsClick('Naver')} className="w-full py-4 bg-[#03C75A] text-white rounded-xl font-bold flex items-center justify-center gap-3 transition-transform active:scale-95">
+            <button onClick={() => handleSnsClick('Naver')} className="w-full py-4 bg-[#03C75A] text-white rounded-2xl font-bold flex items-center justify-center gap-3 transition-transform active:scale-95 shadow-sm border border-[#03C75A]">
               <span className="font-extrabold font-serif italic">N</span> 네이버로 시작하기
             </button>
-            <button onClick={() => handleSnsClick('Google')} className="w-full py-4 bg-white text-black border border-slate-300 rounded-xl font-bold flex items-center justify-center gap-3 transition-transform active:scale-95">
+            <button onClick={() => handleSnsClick('Google')} className="w-full py-4 bg-white text-slate-900 border border-slate-200 rounded-2xl font-bold flex items-center justify-center gap-3 transition-transform active:scale-95 shadow-sm">
               <span className="text-xl">G</span> 구글로 시작하기
             </button>
-            <button onClick={() => handleSnsClick('Apple')} className="w-full py-4 bg-black text-white border border-slate-800 rounded-xl font-bold flex items-center justify-center gap-3 transition-transform active:scale-95">
+            <button onClick={() => handleSnsClick('Apple')} className="w-full py-4 bg-black text-white border border-black rounded-2xl font-bold flex items-center justify-center gap-3 transition-transform active:scale-95 shadow-sm">
               <span className="text-xl"></span> Apple로 시작하기
             </button>
 
-            <div className="flex items-center my-4">
-              <div className="flex-1 border-t border-slate-700"></div>
-              <span className="px-3 text-xs text-slate-500">또는</span>
-              <div className="flex-1 border-t border-slate-700"></div>
+            <div className="flex items-center my-6">
+              <div className="flex-1 border-t border-slate-200"></div>
+              <span className="px-3 text-xs text-slate-400 font-medium">또는</span>
+              <div className="flex-1 border-t border-slate-200"></div>
             </div>
 
-            <button onClick={() => setViewMode('emailSignup')} className="w-full py-4 bg-slate-800 text-white border border-slate-700 rounded-xl font-bold transition-transform active:scale-95 hover:bg-slate-700">
+            <button onClick={() => setViewMode('emailSignup')} className="w-full py-4 bg-slate-100 text-slate-600 border border-slate-200 rounded-2xl font-bold transition-transform active:scale-95 hover:bg-slate-200">
               이메일로 가입하기
             </button>
 
-            <div className="mt-6 text-sm text-slate-500 text-center">
+            <div className="mt-8 text-sm text-slate-500 text-center">
               이미 계정이 있으신가요?{' '}
-              <button onClick={() => setViewMode('login')} className="text-primary hover:text-primary-hover font-medium ml-1">
+              <button onClick={() => setViewMode('login')} className="text-primary hover:text-primary-hover font-bold ml-1">
                 로그인
               </button>
             </div>
@@ -186,27 +184,27 @@ export default function LoginPage() {
         {viewMode === 'snsDetail' && (
           // 2-1. SNS 추가 정보 폼
           <div className="w-full">
-            <h2 className="text-xl font-bold text-white mb-2 text-center">{selectedProvider} 계정으로 가입</h2>
-            <p className="text-sm text-slate-400 text-center mb-6">마지막으로 가입에 필요한 정보를 입력해주세요.</p>
+            <h2 className="text-2xl font-extrabold text-slate-900 mb-2 text-center">{selectedProvider} 계정으로 가입</h2>
+            <p className="text-sm text-slate-500 text-center mb-8">마지막으로 가입에 필요한 정보를 입력해주세요.</p>
             
             <form onSubmit={handleSignupAction} className="w-full space-y-4">
               <input type="hidden" name="provider" value={selectedProvider} />
               <div>
-                <input name="name" type="text" placeholder="이름 (또는 닉네임)" required className="w-full bg-slate-800/50 border border-slate-700 rounded-xl px-4 py-3.5 text-white placeholder-slate-500 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all" />
+                <input name="name" type="text" placeholder="이름 (또는 닉네임)" required className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-4 py-4 text-slate-900 placeholder-slate-400 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary focus:bg-white transition-all shadow-sm" />
               </div>
               <div>
-                <input name="age" type="number" placeholder="나이" required min="10" max="100" className="w-full bg-slate-800/50 border border-slate-700 rounded-xl px-4 py-3.5 text-white placeholder-slate-500 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all" />
+                <input name="age" type="number" placeholder="나이" required min="10" max="100" className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-4 py-4 text-slate-900 placeholder-slate-400 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary focus:bg-white transition-all shadow-sm" />
               </div>
               
-              <div className="mt-6 p-4 bg-slate-800/50 border border-slate-700 rounded-xl flex items-start gap-3">
+              <div className="mt-6 p-4 bg-slate-50 border border-slate-200 rounded-2xl flex items-start gap-3">
                 <input 
                   type="checkbox" 
                   id="snsAgree" 
                   checked={isAgreed} 
                   onChange={(e) => setIsAgreed(e.target.checked)} 
-                  className="mt-1 w-4 h-4 text-primary bg-slate-900 border-slate-600 rounded focus:ring-primary focus:ring-offset-slate-900" 
+                  className="mt-1 w-4 h-4 text-primary bg-white border-slate-300 rounded focus:ring-primary" 
                 />
-                <label htmlFor="snsAgree" className="text-sm text-slate-300">
+                <label htmlFor="snsAgree" className="text-sm text-slate-600 font-medium">
                   <span className="text-primary font-bold">[필수]</span> 개인정보 수집 및 이용에 동의합니다.
                 </label>
               </div>
@@ -214,13 +212,13 @@ export default function LoginPage() {
               <button 
                 type="submit" 
                 disabled={!isAgreed || isSubmitting}
-                className="w-full mt-4 py-4 bg-primary hover:bg-primary-hover disabled:bg-slate-600 disabled:opacity-50 text-white rounded-xl font-bold shadow-lg shadow-emerald-500/25 transition-transform active:scale-95 disabled:scale-100 flex items-center justify-center"
+                className="w-full mt-4 py-4 bg-primary hover:bg-primary-hover disabled:bg-slate-300 disabled:text-slate-500 disabled:shadow-none text-white rounded-2xl font-bold shadow-[0_8px_30px_rgb(168,85,247,0.2)] transition-transform active:scale-95 disabled:scale-100 flex items-center justify-center"
               >
                 {isSubmitting ? <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin"></div> : '가입 완료하고 성향 테스트하기'}
               </button>
             </form>
-            <div className="mt-6 text-sm text-slate-500 text-center">
-              <button onClick={() => setViewMode('snsSignup')} className="text-slate-400 hover:text-white font-medium">
+            <div className="mt-8 text-sm text-slate-500 text-center">
+              <button onClick={() => setViewMode('snsSignup')} className="text-slate-400 hover:text-slate-600 font-medium">
                 &larr; 이전으로 돌아가기
               </button>
             </div>
@@ -230,13 +228,13 @@ export default function LoginPage() {
         {viewMode === 'emailSignup' && (
           // 3. 이메일 회원가입 모드
           <div className="w-full">
-            <h2 className="text-xl font-bold text-white mb-6 text-center">이메일 회원가입</h2>
+            <h2 className="text-2xl font-extrabold text-slate-900 mb-8 text-center">이메일 회원가입</h2>
             <form onSubmit={handleSignupAction} className="w-full space-y-4">
               <div>
-                <input name="name" type="text" placeholder="이름" required className="w-full bg-slate-800/50 border border-slate-700 rounded-xl px-4 py-3.5 text-white placeholder-slate-500 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all" />
+                <input name="name" type="text" placeholder="이름" required className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-4 py-4 text-slate-900 placeholder-slate-400 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary focus:bg-white transition-all shadow-sm" />
               </div>
               <div className="flex gap-2">
-                <input name="age" type="number" placeholder="나이" required min="10" max="100" className="w-1/4 bg-slate-800/50 border border-slate-700 rounded-xl px-4 py-3.5 text-white placeholder-slate-500 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all" />
+                <input name="age" type="number" placeholder="나이" required min="10" max="100" className="w-[30%] bg-slate-50 border border-slate-200 rounded-2xl px-4 py-4 text-slate-900 placeholder-slate-400 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary focus:bg-white transition-all shadow-sm" />
                 
                 {/* 이메일 ID & 도메인 드롭다운 */}
                 <div className="flex flex-1 gap-2 items-center">
@@ -246,17 +244,17 @@ export default function LoginPage() {
                     onChange={(e) => setEmailId(e.target.value)}
                     placeholder="이메일" 
                     required 
-                    className="w-1/2 bg-slate-800/50 border border-slate-700 rounded-xl px-4 py-3.5 text-white placeholder-slate-500 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all" 
+                    className="w-[45%] bg-slate-50 border border-slate-200 rounded-2xl px-4 py-4 text-slate-900 placeholder-slate-400 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary focus:bg-white transition-all shadow-sm" 
                   />
-                  <span className="text-slate-500">@</span>
-                  <div className="w-1/2 flex flex-col gap-2">
+                  <span className="text-slate-400 font-medium">@</span>
+                  <div className="flex-1 flex flex-col gap-2">
                     <select 
                       value={emailDomain}
                       onChange={(e) => setEmailDomain(e.target.value)}
                       required
-                      className="w-full bg-slate-800/50 border border-slate-700 rounded-xl px-4 py-3.5 text-white focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all appearance-none"
+                      className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-3 py-4 text-slate-900 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all appearance-none shadow-sm"
                     >
-                      <option value="" disabled hidden>도메인 선택</option>
+                      <option value="" disabled hidden>도메인</option>
                       <option value="naver.com">naver.com</option>
                       <option value="gmail.com">gmail.com</option>
                       <option value="daum.net">daum.net</option>
@@ -270,7 +268,7 @@ export default function LoginPage() {
                         onChange={(e) => setCustomDomain(e.target.value)}
                         placeholder="직접 입력" 
                         required 
-                        className="w-full bg-slate-800/50 border border-slate-700 rounded-xl px-4 py-3.5 text-white placeholder-slate-500 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all" 
+                        className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-4 py-4 text-slate-900 placeholder-slate-400 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary focus:bg-white transition-all shadow-sm" 
                       />
                     )}
                   </div>
@@ -285,10 +283,10 @@ export default function LoginPage() {
                   required 
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className={`w-full bg-slate-800/50 border ${!isPasswordValid ? 'border-red-500' : 'border-slate-700'} rounded-xl px-4 py-3.5 text-white placeholder-slate-500 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all`} 
+                  className={`w-full bg-slate-50 border ${!isPasswordValid ? 'border-red-400 focus:border-red-500 focus:ring-red-500' : 'border-slate-200 focus:border-primary focus:ring-primary'} rounded-2xl px-4 py-4 text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-1 focus:bg-white transition-all shadow-sm`} 
                 />
                 {!isPasswordValid && (
-                  <p className="text-red-500 text-xs mt-2 ml-1 font-medium">비밀번호는 8자 이상이며, 특수문자를 최소 1개 이상 포함해야 합니다.</p>
+                  <p className="text-red-500 text-xs mt-2 ml-2 font-medium">비밀번호는 8자 이상이며, 특수문자를 최소 1개 이상 포함해야 합니다.</p>
                 )}
               </div>
 
@@ -299,22 +297,22 @@ export default function LoginPage() {
                   required 
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
-                  className={`w-full bg-slate-800/50 border ${!isPasswordMatch ? 'border-red-500' : 'border-slate-700'} rounded-xl px-4 py-3.5 text-white placeholder-slate-500 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all`} 
+                  className={`w-full bg-slate-50 border ${!isPasswordMatch ? 'border-red-400 focus:border-red-500 focus:ring-red-500' : 'border-slate-200 focus:border-primary focus:ring-primary'} rounded-2xl px-4 py-4 text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-1 focus:bg-white transition-all shadow-sm`} 
                 />
                 {!isPasswordMatch && (
-                  <p className="text-red-500 text-xs mt-2 ml-1 font-medium">비밀번호가 일치하지 않습니다.</p>
+                  <p className="text-red-500 text-xs mt-2 ml-2 font-medium">비밀번호가 일치하지 않습니다.</p>
                 )}
               </div>
               
-              <div className="mt-6 p-4 bg-slate-800/50 border border-slate-700 rounded-xl flex items-start gap-3">
+              <div className="mt-6 p-4 bg-slate-50 border border-slate-200 rounded-2xl flex items-start gap-3">
                 <input 
                   type="checkbox" 
                   id="emailAgree" 
                   checked={isAgreed} 
                   onChange={(e) => setIsAgreed(e.target.checked)} 
-                  className="mt-1 w-4 h-4 text-primary bg-slate-900 border-slate-600 rounded focus:ring-primary focus:ring-offset-slate-900" 
+                  className="mt-1 w-4 h-4 text-primary bg-white border-slate-300 rounded focus:ring-primary" 
                 />
-                <label htmlFor="emailAgree" className="text-sm text-slate-300">
+                <label htmlFor="emailAgree" className="text-sm text-slate-600 font-medium">
                   <span className="text-primary font-bold">[필수]</span> 개인정보 수집 및 이용에 동의합니다.
                 </label>
               </div>
@@ -322,13 +320,13 @@ export default function LoginPage() {
               <button 
                 type="submit" 
                 disabled={!isAgreed || isSubmitting || !isPasswordValid || !isPasswordMatch || password === ''}
-                className="w-full mt-4 py-4 bg-primary hover:bg-primary-hover disabled:bg-slate-600 disabled:opacity-50 text-white rounded-xl font-bold shadow-lg shadow-emerald-500/25 transition-transform active:scale-95 disabled:scale-100 flex items-center justify-center"
+                className="w-full mt-4 py-4 bg-primary hover:bg-primary-hover disabled:bg-slate-300 disabled:text-slate-500 disabled:shadow-none text-white rounded-2xl font-bold shadow-[0_8px_30px_rgb(168,85,247,0.2)] transition-transform active:scale-95 disabled:scale-100 flex items-center justify-center"
               >
                 {isSubmitting ? <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin"></div> : '가입 완료하고 성향 테스트하기'}
               </button>
             </form>
-            <div className="mt-6 text-sm text-slate-500 text-center">
-              <button onClick={() => setViewMode('snsSignup')} className="text-slate-400 hover:text-white font-medium">
+            <div className="mt-8 text-sm text-slate-500 text-center">
+              <button onClick={() => setViewMode('snsSignup')} className="text-slate-400 hover:text-slate-600 font-medium">
                 &larr; 이전으로 돌아가기
               </button>
             </div>
