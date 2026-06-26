@@ -72,14 +72,16 @@ export default function LoginPage() {
       return;
     }
 
-    if (!isPasswordValid || password === '') {
-      alert('비밀번호 유효성 조건을 만족해주세요.');
-      return;
-    }
+    if (viewMode === 'emailSignup') {
+      if (!isPasswordValid || password === '') {
+        alert('비밀번호 유효성 조건을 만족해주세요.');
+        return;
+      }
 
-    if (viewMode === 'emailSignup' && !isPasswordMatch) {
-      alert('비밀번호가 일치하지 않습니다.');
-      return;
+      if (!isPasswordMatch) {
+        alert('비밀번호가 일치하지 않습니다.');
+        return;
+      }
     }
 
     setIsSubmitting(true);
