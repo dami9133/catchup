@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { Flame, TrendingUp, Sparkles, Video, Lock, Unlock, Map as MapIcon, Gem, ChevronRight, ChevronLeft, ChevronDown, PlayCircle, Building2, Clock, Link as LinkIcon, X, ArrowRight, Palette, Shield, CheckCircle, Target, Award } from 'lucide-react';
+import { Flame, TrendingUp, Sparkles, Video, Lock, Unlock, Map as MapIcon, Gem, ChevronRight, ChevronLeft, ChevronDown, PlayCircle, Building2, Clock, Link as LinkIcon, X, ArrowRight, Briefcase, BookOpen, Users, Rocket, Target, CheckCircle } from 'lucide-react';
 import Link from 'next/link';
 
 type JobCategory = 'recommended' | 'popular';
@@ -108,10 +108,17 @@ export default function DashboardPage() {
   const TRENDING_JOBS = ['데이터 분석가', 'AI 프롬프트 엔지니어', '그로스 해커', '콘텐츠 마케터', 'UX/UI 디자이너'];
 
   const TODAY_QUESTS = [
-    { id: 1, title: '관심 직무 1개 케이스 스터디 작성', category: '포트폴리오', exp: 120, icon: Palette, color: 'text-purple-500', bg: 'bg-purple-50' },
-    { id: 2, title: '현직자 멘토에게 질문 남기기', category: '네트워킹', exp: 80, icon: Sparkles, color: 'text-blue-500', bg: 'bg-blue-50' },
-    { id: 3, title: '직무 관련 아티클 3개 읽기', category: '지식 습득', exp: 50, icon: Target, color: 'text-emerald-500', bg: 'bg-emerald-50' },
-    { id: 4, title: '이력서 초안 작성 후 AI 피드백 받기', category: '이력서 점검', exp: 200, icon: CheckCircle, color: 'text-red-500', bg: 'bg-red-50' },
+    { id: 1, title: '관심 직무 1개 케이스 스터디 작성', category: '포트폴리오', exp: 120, icon: Briefcase, color: 'text-purple-500', bg: 'bg-purple-50' },
+    { id: 2, title: '현직자 멘토에게 질문 남기기', category: '네트워킹', exp: 80, icon: Users, color: 'text-blue-500', bg: 'bg-blue-50' },
+    { id: 3, title: '직무 관련 아티클 3개 읽기', category: '직무 학습', exp: 50, icon: BookOpen, color: 'text-emerald-500', bg: 'bg-emerald-50' },
+    { id: 4, title: '미니 인턴십 지원하기', category: '실전 경험', exp: 200, icon: Rocket, color: 'text-red-500', bg: 'bg-red-50' },
+  ];
+
+  const BADGE_PROGRESS = [
+    { id: 'portfolio', name: '포트폴리오', count: 2, total: 5, icon: Briefcase, color: '#A855F7' },
+    { id: 'learning', name: '직무 학습', count: 5, total: 5, icon: BookOpen, color: '#10B981' },
+    { id: 'networking', name: '네트워킹', count: 1, total: 5, icon: Users, color: '#3B82F6' },
+    { id: 'experience', name: '실전 경험', count: 0, total: 5, icon: Rocket, color: '#EF4444' }
   ];
   
   const recommendedJobs = userPersona?.jobs || ['콘텐츠 마케터', '그로스 해커'];
@@ -168,20 +175,44 @@ export default function DashboardPage() {
           <div className="relative z-10 border-t border-white/10 pt-4 flex items-center justify-between">
             <span className="text-white/60 text-[10px] font-extrabold tracking-wide">획득 뱃지</span>
             <div className="flex gap-2.5">
-              {/* 활성화된 뱃지 */}
-              <div className="w-8 h-8 rounded-full bg-white/20 border border-white/40 flex items-center justify-center shadow-[0_0_10px_rgba(255,255,255,0.3)]">
-                <Flame className="w-4 h-4 text-white" strokeWidth={2.5} />
-              </div>
-              <div className="w-8 h-8 rounded-full bg-white/20 border border-white/40 flex items-center justify-center shadow-[0_0_10px_rgba(255,255,255,0.3)]">
-                <TrendingUp className="w-4 h-4 text-white" strokeWidth={2.5} />
-              </div>
-              {/* 비활성화된 뱃지 */}
-              <div className="w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center">
-                <Palette className="w-4 h-4 text-white/30" strokeWidth={2} />
-              </div>
-              <div className="w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center">
-                <Shield className="w-4 h-4 text-white/30" strokeWidth={2} />
-              </div>
+              {BADGE_PROGRESS.map((badge) => {
+                const isCompleted = badge.count === badge.total;
+                const isStarted = badge.count > 0;
+                const radius = 14;
+                const circumference = 2 * Math.PI * radius;
+                const fillPercentage = (badge.count / badge.total) * 100;
+                const offset = circumference - (fillPercentage / 100) * circumference;
+                const BadgeIcon = badge.icon;
+                
+                return (
+                  <div key={badge.id} className="relative w-8 h-8 rounded-full flex items-center justify-center bg-white/5">
+                    {/* SVG Progress Ring */}
+                    <svg className="absolute inset-0 w-full h-full -rotate-90 pointer-events-none">
+                      {/* Background circle */}
+                      <circle cx="50%" cy="50%" r={radius} className="stroke-white/10" strokeWidth="1.5" fill="none" />
+                      {/* Progress circle */}
+                      {isStarted && (
+                        <circle 
+                          cx="50%" 
+                          cy="50%" 
+                          r={radius} 
+                          className={isCompleted ? "stroke-white" : "stroke-white/60"} 
+                          strokeWidth="1.5" 
+                          fill="none" 
+                          strokeDasharray={circumference} 
+                          strokeDashoffset={offset}
+                          strokeLinecap="round"
+                          style={{ transition: 'stroke-dashoffset 0.5s ease-in-out' }}
+                        />
+                      )}
+                    </svg>
+                    {/* Icon */}
+                    <div className={`relative z-10 flex items-center justify-center w-full h-full rounded-full ${isCompleted ? 'bg-white/20 shadow-[0_0_10px_rgba(255,255,255,0.3)]' : ''}`}>
+                      <BadgeIcon className={`w-3.5 h-3.5 ${isCompleted ? 'text-white' : (isStarted ? 'text-white/70' : 'text-white/30')}`} strokeWidth={isCompleted ? 2.5 : 2} />
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           </div>
         </div>
