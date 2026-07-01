@@ -18,6 +18,7 @@ export default function DashboardPage() {
   const [expandedStep, setExpandedStep] = useState<string | null>(null);
 
   const [showQuestModal, setShowQuestModal] = useState(false);
+  const [showAllQuestsModal, setShowAllQuestsModal] = useState(false);
   const [selectedQuest, setSelectedQuest] = useState<any>(null);
   const [uploadedFileName, setUploadedFileName] = useState<string | null>(null);
   const [questExp, setQuestExp] = useState(640);
@@ -165,6 +166,26 @@ export default function DashboardPage() {
       guide: '기업 연계 미니 인턴십 공고를 하나 찾아서, 해당 직무에 맞는 이력서를 제출하고 실무 과제에 도전해 보세요.',
       verifyMethod: '지원 완료 메일 또는 지원 내역 화면 캡쳐 첨부'
     },
+    { 
+      id: 5, title: '포트폴리오 사이트 1차 구성', badgeId: 'portfolio', category: '포트폴리오', exp: 150, icon: Briefcase, color: 'text-purple-500', bg: 'bg-purple-50',
+      guide: '노션이나 웹빌더를 이용해 본인의 포트폴리오 메인 화면을 구성하고 지금까지의 프로젝트 목록을 나열해 보세요.',
+      verifyMethod: '포트폴리오 사이트 메인 화면 캡쳐 첨부'
+    },
+    { 
+      id: 6, title: '관심 기업 뉴스레터 구독', badgeId: 'learning', category: '직무 학습', exp: 30, icon: BookOpen, color: 'text-emerald-500', bg: 'bg-emerald-50',
+      guide: '목표로 하는 기업이나 해당 산업군의 주요 뉴스레터를 1개 이상 구독하고 첫 이메일을 확인해 보세요.',
+      verifyMethod: '구독 완료 또는 메일 수신 화면 캡쳐 첨부'
+    },
+    { 
+      id: 7, title: '링크드인 프로필 80% 완성하기', badgeId: 'networking', category: '네트워킹', exp: 100, icon: Users, color: 'text-blue-500', bg: 'bg-blue-50',
+      guide: '링크드인 프로필의 사진, 학력, 주요 경험, 스킬 섹션을 채워 넣으세요.',
+      verifyMethod: '링크드인 프로필 화면 전체 캡쳐 첨부'
+    },
+    { 
+      id: 8, title: '사이드 프로젝트 기획안 작성', badgeId: 'experience', category: '실전 경험', exp: 180, icon: Rocket, color: 'text-red-500', bg: 'bg-red-50',
+      guide: '본인이 평소 만들고 싶었던 서비스나 프로덕트의 1페이지짜리 간단한 기획안(목적, 타겟, 핵심 기능)을 작성해 보세요.',
+      verifyMethod: '기획안 문서 캡쳐 첨부'
+    }
   ];
   
   const recommendedJobs = userPersona?.jobs || ['콘텐츠 마케터', '그로스 해커'];
@@ -334,7 +355,7 @@ export default function DashboardPage() {
               </div>
               오늘의 직무 퀘스트
             </h2>
-            <button className="text-xs font-bold text-slate-500 flex items-center gap-1 hover:text-blue-600 transition-colors">
+            <button onClick={() => setShowAllQuestsModal(true)} className="text-xs font-bold text-slate-500 flex items-center gap-1 hover:text-blue-600 transition-colors">
               전체보기 <ArrowRight className="w-3.5 h-3.5" />
             </button>
           </div>
@@ -732,6 +753,56 @@ export default function DashboardPage() {
             >
               업로드 완료 및 보상받기
             </button>
+          </div>
+        </div>
+      )}
+
+      {/* 전체 퀘스트 모달 */}
+      {showAllQuestsModal && (
+        <div className="fixed inset-0 z-[90] flex flex-col bg-slate-900/60 backdrop-blur-sm sm:p-4">
+          <div className="bg-white h-full sm:h-auto sm:rounded-[2rem] w-full max-w-2xl mx-auto sm:max-h-[90vh] flex flex-col shadow-2xl animate-in slide-in-from-bottom-full duration-300">
+            <div className="p-6 border-b border-slate-100 flex items-center justify-between sticky top-0 bg-white/80 backdrop-blur-md z-10 sm:rounded-t-[2rem]">
+              <h2 className="text-xl font-extrabold text-slate-900 flex items-center gap-2">
+                <Target className="w-6 h-6 text-blue-600" /> 커리어 성장 퀘스트 전체보기
+              </h2>
+              <button 
+                onClick={() => setShowAllQuestsModal(false)}
+                className="w-10 h-10 bg-slate-50 hover:bg-slate-100 flex items-center justify-center rounded-full text-slate-400 hover:text-slate-900 transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            
+            <div className="flex-1 overflow-y-auto p-6 space-y-4">
+              {TODAY_QUESTS.map((quest) => {
+                const QuestIcon = quest.icon;
+                return (
+                  <div 
+                    key={quest.id}
+                    onClick={() => { setSelectedQuest(quest); setShowQuestModal(true); }}
+                    className="bg-white border border-slate-100 rounded-[20px] p-5 cursor-pointer hover:border-slate-300 transition-colors shadow-sm active:scale-[0.99] flex items-center justify-between"
+                  >
+                    <div className="flex items-center gap-4">
+                      <div className={`w-12 h-12 rounded-2xl ${quest.bg} flex items-center justify-center`}>
+                        <QuestIcon className={`w-6 h-6 ${quest.color}`} strokeWidth={2} />
+                      </div>
+                      <div>
+                        <span className={`inline-block px-2 py-0.5 ${quest.bg} ${quest.color} text-[10px] font-extrabold rounded-md border border-white/20 mb-1.5`}>
+                          {quest.category}
+                        </span>
+                        <h3 className="text-slate-900 font-extrabold text-[15px] leading-snug">{quest.title}</h3>
+                      </div>
+                    </div>
+                    <div className="flex flex-col items-end gap-2">
+                      <span className="text-blue-600 font-black text-sm">+{quest.exp} EXP</span>
+                      <div className="w-8 h-8 rounded-full bg-slate-50 flex items-center justify-center">
+                        <ArrowRight className="w-4 h-4 text-slate-400" />
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
           </div>
         </div>
       )}
