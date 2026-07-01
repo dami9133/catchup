@@ -89,3 +89,53 @@ export async function updateUserPersona(email: string, persona: string) {
     return { success: false };
   }
 }
+
+// 이메일 인증 발송
+export async function sendVerificationEmail(email: string) {
+  // 실제 서비스 환경에서는 env에 배포된 GAS 웹앱 URL을 설정해야 합니다.
+  const gasUrl = process.env.NEXT_PUBLIC_GAS_URL || process.env.GAS_WEB_APP_URL;
+  
+  if (!gasUrl) {
+    console.warn('GAS_WEB_APP_URL이 설정되지 않았습니다. 개발 환경 모의 작동합니다.');
+    // 개발 모드 모의 성공
+    return { success: true, message: '[개발 모드] 인증번호 123456이 발송되었습니다. (실제 메일 발송 안됨)' };
+  }
+
+  try {
+    const res = await fetch(gasUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action_type: 'send_verification', email }),
+    });
+    const data = await res.json();
+    return data;
+  } catch (error) {
+    console.error('Send Verification Error:', error);
+    return { success: false, message: '이메일 발송에 실패했습니다.' };
+  }
+}
+
+// 이메일 인증코드 확인
+export async function verifyEmailCode(email: string, code: string) {
+  const gasUrl = process.env.NEXT_PUBLIC_GAS_URL || process.env.GAS_WEB_APP_URL;
+
+  if (!gasUrl) {
+    if (code === '123456') {
+      return { success: true, message: '인증에 성공했습니다.' };
+    }
+    return { success: false, message: '인증번호가 일치하지 않습니다.' };
+  }
+
+  try {
+    const res = await fetch(gasUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action_type: 'verify_code', email, code }),
+    });
+    const data = await res.json();
+    return data;
+  } catch (error) {
+    console.error('Verify Code Error:', error);
+    return { success: false, message: '인증 검증에 실패했습니다.' };
+  }
+}
