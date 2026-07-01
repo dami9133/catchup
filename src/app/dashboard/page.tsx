@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { Flame, TrendingUp, Sparkles, Video, Lock, Unlock, Map as MapIcon, Gem, ChevronRight, ChevronLeft, ChevronDown, PlayCircle, Building2, Clock, Link as LinkIcon, X, ArrowRight } from 'lucide-react';
+import { Flame, TrendingUp, Sparkles, Video, Lock, Unlock, Map as MapIcon, Gem, ChevronRight, ChevronLeft, ChevronDown, PlayCircle, Building2, Clock, Link as LinkIcon, X, ArrowRight, Palette, Shield, CheckCircle, Target, Award } from 'lucide-react';
 import Link from 'next/link';
 
 type JobCategory = 'recommended' | 'popular';
@@ -19,11 +19,14 @@ export default function DashboardPage() {
 
   const scrollRefJobs = useRef<HTMLDivElement>(null);
   const scrollRefVlogs = useRef<HTMLDivElement>(null);
+  const scrollRefQuests = useRef<HTMLDivElement>(null);
 
   const [canScrollLeftJobs, setCanScrollLeftJobs] = useState(false);
   const [canScrollRightJobs, setCanScrollRightJobs] = useState(true);
   const [canScrollLeftVlogs, setCanScrollLeftVlogs] = useState(false);
   const [canScrollRightVlogs, setCanScrollRightVlogs] = useState(true);
+  const [canScrollLeftQuests, setCanScrollLeftQuests] = useState(false);
+  const [canScrollRightQuests, setCanScrollRightQuests] = useState(true);
 
   const handleScroll = (e: React.UIEvent<HTMLDivElement>, setLeft: Function, setRight: Function) => {
     const { scrollLeft, scrollWidth, clientWidth } = e.currentTarget;
@@ -102,7 +105,15 @@ export default function DashboardPage() {
 
   const fallbackJob = { title: '상세 정보', tasks: '다양한 실무 경험', certs: '관련 포트폴리오', companies: '유망 스타트업', satisfaction: '4.0', salary: '회사 내규에 따름' };
   const getJobInfo = (jobName: string) => JOB_INFO[jobName] || { ...fallbackJob, title: jobName };
-  const TRENDING_JOBS = ['데이터 분석가', 'AI 프롬프트 엔지니어', '그로스 해커'];
+  const TRENDING_JOBS = ['데이터 분석가', 'AI 프롬프트 엔지니어', '그로스 해커', '콘텐츠 마케터', 'UX/UI 디자이너'];
+
+  const TODAY_QUESTS = [
+    { id: 1, title: '관심 직무 1개 케이스 스터디 작성', category: '포트폴리오', exp: 120, icon: Palette, color: 'text-purple-500', bg: 'bg-purple-50' },
+    { id: 2, title: '현직자 멘토에게 질문 남기기', category: '네트워킹', exp: 80, icon: Sparkles, color: 'text-blue-500', bg: 'bg-blue-50' },
+    { id: 3, title: '직무 관련 아티클 3개 읽기', category: '지식 습득', exp: 50, icon: Target, color: 'text-emerald-500', bg: 'bg-emerald-50' },
+    { id: 4, title: '이력서 초안 작성 후 AI 피드백 받기', category: '이력서 점검', exp: 200, icon: CheckCircle, color: 'text-red-500', bg: 'bg-red-50' },
+  ];
+  
   const recommendedJobs = userPersona?.jobs || ['콘텐츠 마케터', '그로스 해커'];
   
   // 추천 직무 2개 추출 (부족하면 기본값 매핑)
@@ -140,7 +151,7 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          <div className="relative z-10">
+          <div className="relative z-10 mb-5">
             <div className="flex justify-between items-end mb-2">
               <div className="flex items-center gap-1.5">
                 <Flame className="w-4 h-4 text-blue-400" strokeWidth={2.5} />
@@ -150,6 +161,27 @@ export default function DashboardPage() {
             </div>
             <div className="h-2.5 w-full bg-white/10 rounded-full overflow-hidden border border-white/10">
               <div className="h-full bg-blue-500 w-[64%] rounded-full shadow-[0_0_10px_rgba(59,130,246,0.5)]"></div>
+            </div>
+          </div>
+
+          {/* 획득 뱃지 */}
+          <div className="relative z-10 border-t border-white/10 pt-4 flex items-center justify-between">
+            <span className="text-white/60 text-[10px] font-extrabold tracking-wide">획득 뱃지</span>
+            <div className="flex gap-2.5">
+              {/* 활성화된 뱃지 */}
+              <div className="w-8 h-8 rounded-full bg-white/20 border border-white/40 flex items-center justify-center shadow-[0_0_10px_rgba(255,255,255,0.3)]">
+                <Flame className="w-4 h-4 text-white" strokeWidth={2.5} />
+              </div>
+              <div className="w-8 h-8 rounded-full bg-white/20 border border-white/40 flex items-center justify-center shadow-[0_0_10px_rgba(255,255,255,0.3)]">
+                <TrendingUp className="w-4 h-4 text-white" strokeWidth={2.5} />
+              </div>
+              {/* 비활성화된 뱃지 */}
+              <div className="w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center">
+                <Palette className="w-4 h-4 text-white/30" strokeWidth={2} />
+              </div>
+              <div className="w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center">
+                <Shield className="w-4 h-4 text-white/30" strokeWidth={2} />
+              </div>
             </div>
           </div>
         </div>
@@ -208,6 +240,74 @@ export default function DashboardPage() {
             <div className={`absolute right-0 top-0 bottom-4 w-20 bg-gradient-to-l from-slate-50 via-slate-50/80 to-transparent flex items-center justify-end pointer-events-none z-10 transition-opacity ${canScrollRightJobs ? 'opacity-100' : 'opacity-0'}`}>
               <button 
                 onClick={(e) => scrollRight(scrollRefJobs, e)}
+                className="w-10 h-10 bg-white/90 backdrop-blur-sm shadow-md rounded-full flex items-center justify-center text-slate-600 pointer-events-auto mr-4 hover:text-blue-600 transition-colors"
+              >
+                <ChevronRight className="w-5 h-5" />
+              </button>
+            </div>
+          </div>
+        </section>
+
+        {/* 1.5. 오늘의 직무 퀘스트 (가로 스크롤) */}
+        <section className="px-5">
+          <div className="flex justify-between items-end mb-4">
+            <h2 className="text-slate-900 font-extrabold text-lg flex items-center gap-2.5">
+              <div className="w-10 h-10 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center">
+                <Target className="w-5 h-5" strokeWidth={2} />
+              </div>
+              오늘의 직무 퀘스트
+            </h2>
+          </div>
+          
+          <div className="relative group">
+            <div 
+              className="flex gap-4 overflow-x-auto pb-4 hide-scrollbar snap-x px-6" 
+              ref={scrollRefQuests}
+              onScroll={(e) => handleScroll(e, setCanScrollLeftQuests, setCanScrollRightQuests)}
+            >
+              {TODAY_QUESTS.map((quest) => {
+                const QuestIcon = quest.icon;
+                return (
+                  <div 
+                    key={quest.id} 
+                    className="bg-white hover:border-slate-300 border border-slate-100 transition-colors rounded-[24px] p-5 w-[75%] max-w-[260px] snap-center flex-shrink-0 cursor-pointer relative shadow-[0_4px_20px_rgb(0,0,0,0.03)] flex flex-col justify-between active:scale-[0.98]"
+                  >
+                    <div>
+                      <div className="flex justify-between items-start mb-3">
+                        <span className={`px-2.5 py-1 ${quest.bg} ${quest.color} text-[10px] font-extrabold rounded-md border border-white/20 flex items-center gap-1`}>
+                          <QuestIcon className="w-3 h-3" strokeWidth={2.5} />
+                          {quest.category}
+                        </span>
+                        <span className="text-blue-600 font-black text-sm">+{quest.exp} EXP</span>
+                      </div>
+                      <h3 className="text-slate-900 font-extrabold text-[15px] leading-snug break-keep">{quest.title}</h3>
+                    </div>
+                    <div className="mt-4 flex justify-end">
+                      <div className="w-8 h-8 rounded-full bg-slate-50 flex items-center justify-center">
+                        <ArrowRight className="w-4 h-4 text-slate-400" />
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+            
+            {/* 좌측 화살표 */}
+            {canScrollLeftQuests && (
+              <div className="absolute left-4 top-0 bottom-4 w-12 flex items-center justify-start pointer-events-none z-10">
+                <button 
+                  onClick={(e) => scrollLeft(scrollRefQuests, e)}
+                  className="w-10 h-10 bg-white/90 backdrop-blur-sm shadow-md rounded-full flex items-center justify-center text-slate-600 pointer-events-auto hover:text-blue-600 transition-colors"
+                >
+                  <ChevronLeft className="w-5 h-5" />
+                </button>
+              </div>
+            )}
+
+            {/* 우측 그라데이션 및 화살표 */}
+            <div className={`absolute right-0 top-0 bottom-4 w-20 bg-gradient-to-l from-slate-50 via-slate-50/80 to-transparent flex items-center justify-end pointer-events-none z-10 transition-opacity ${canScrollRightQuests ? 'opacity-100' : 'opacity-0'}`}>
+              <button 
+                onClick={(e) => scrollRight(scrollRefQuests, e)}
                 className="w-10 h-10 bg-white/90 backdrop-blur-sm shadow-md rounded-full flex items-center justify-center text-slate-600 pointer-events-auto mr-4 hover:text-blue-600 transition-colors"
               >
                 <ChevronRight className="w-5 h-5" />
