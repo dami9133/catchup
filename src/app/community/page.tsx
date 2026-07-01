@@ -52,12 +52,17 @@ export default function CommunityPage() {
   }, [activeTab]);
 
   return (
-    <main className="min-h-full pb-20 bg-slate-50 flex flex-col relative break-keep whitespace-pre-wrap">
-      <header className="p-5 pb-2">
-        <h1 className="text-xl font-extrabold text-slate-900 mb-5 tracking-tight">커뮤니티</h1>
+    <main className="min-h-full flex flex-col relative break-keep whitespace-pre-wrap bg-transparent">
+      <header className="pt-8 px-5 pb-10 bg-[#111827]">
+        <h1 className="text-xl font-extrabold text-white mb-5 tracking-tight">커뮤니티</h1>
         
+        {/* Tabs - Now part of the white body but visually sticking out or just inside the white body */}
+      </header>
+
+      <div className="flex-1 bg-white rounded-t-[32px] pt-4 shadow-[0_-10px_40px_rgb(0,0,0,0.12)] -mt-6 z-20 flex flex-col pb-20">
         {/* Tabs */}
-        <div className="flex border-b border-slate-100 overflow-x-auto whitespace-nowrap hide-scrollbar">
+        <div className="px-5 pt-4 bg-white rounded-t-[32px]">
+          <div className="flex border-b border-slate-100 overflow-x-auto whitespace-nowrap hide-scrollbar">
           <button
             onClick={() => setActiveTab('jobInfo')}
             className={`px-4 pb-3 text-sm font-bold transition-colors border-b-2 ${
@@ -89,11 +94,11 @@ export default function CommunityPage() {
             창업지원 공고
             <Rocket className="w-4 h-4" />
           </button>
+          </div>
         </div>
-      </header>
 
       {/* Post List */}
-      <ul className="flex-1 overflow-y-auto">
+      <ul className="flex-1 overflow-y-auto bg-slate-50 mt-2">
         {activeTab === 'startupCamp' ? (
           <div className="p-4">
             {isLoadingStartup ? (
@@ -114,9 +119,9 @@ export default function CommunityPage() {
                   <button 
                     key={item.id} 
                     onClick={() => setSelectedStartup(item)}
-                    className="w-full text-left p-5 bg-white hover:bg-slate-50 rounded-2xl border border-slate-100 transition-all shadow-sm group block active:scale-[0.98]"
+                    className="w-full text-left p-6 bg-white hover:border-slate-200 rounded-3xl border border-slate-100 transition-all shadow-[0_4px_20px_rgb(0,0,0,0.03)] group block active:scale-[0.98]"
                   >
-                    <div className="flex justify-between items-start mb-2">
+                    <div className="flex justify-between items-start mb-3">
                       <span className="px-2.5 py-1 bg-emerald-50 text-emerald-600 text-[10px] font-extrabold rounded-lg border border-emerald-100">
                         {item.category}
                       </span>
@@ -137,8 +142,9 @@ export default function CommunityPage() {
             )}
           </div>
         ) : (
-          MOCK_POSTS[activeTab].map((post) => (
-            <li key={post.id} className="border-b border-slate-100 hover:bg-white transition-colors cursor-pointer p-5">
+          <div className="p-4 space-y-3">
+            {MOCK_POSTS[activeTab].map((post) => (
+              <li key={post.id} className="bg-white border border-slate-100 rounded-3xl p-6 transition-all shadow-[0_4px_20px_rgb(0,0,0,0.03)] cursor-pointer active:scale-[0.98] list-none">
               <h3 className="text-slate-800 font-bold text-[15px] mb-2">{post.title}</h3>
               <div className="flex items-center text-xs font-medium text-slate-400 gap-4">
                 <span>{post.time}</span>
@@ -147,10 +153,12 @@ export default function CommunityPage() {
                   {post.comments}
                 </span>
               </div>
-            </li>
-          ))
+              </li>
+            ))}
+          </div>
         )}
       </ul>
+      </div>
 
       {/* FAB (Floating Action Button) */}
       {activeTab !== 'startupCamp' && (

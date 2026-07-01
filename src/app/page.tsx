@@ -112,38 +112,40 @@ export default function LoginPage() {
   };
 
   return (
-    <main className="flex flex-col items-center justify-center min-h-full p-8 relative overflow-y-auto bg-background">
-      {/* Background elements */}
-      <div className="absolute top-0 right-0 w-64 h-64 bg-primary/10 rounded-full mix-blend-multiply filter blur-3xl -z-10"></div>
-      
-      <div className="w-full flex-1 flex flex-col justify-center items-center py-10">
-        <h1 className="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-br from-purple-500 to-indigo-600 mb-2 tracking-tight">
+    <main className="flex flex-col min-h-full relative overflow-hidden bg-transparent">
+      {/* Header part */}
+      <div className="pt-24 pb-12 px-8 text-center relative z-10">
+        <h1 className="text-4xl font-extrabold text-white mb-2 tracking-tight">
           CATCHUP
         </h1>
-        <p className="text-slate-500 mb-12 font-medium tracking-wide">
+        <p className="text-slate-400 mb-4 font-medium tracking-wide">
           불확실한 미래를 확신으로
         </p>
+      </div>
+
+      {/* Body part */}
+      <div className="flex-1 bg-white w-full rounded-t-[32px] px-8 pt-10 pb-16 shadow-[0_-10px_40px_rgb(0,0,0,0.12)] flex flex-col relative z-20 overflow-y-auto">
 
         {viewMode === 'login' && (
           // 1. 로그인 모드
           <>
             <form onSubmit={handleLoginAction} className="w-full space-y-4">
               <div>
-                <input name="email" type="email" placeholder="이메일 주소" required className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-4 py-4 text-slate-900 placeholder-slate-400 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary focus:bg-white transition-all shadow-sm" />
+                <input name="email" type="email" placeholder="이메일 주소" required className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-5 py-4 text-slate-900 placeholder-slate-400 focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 focus:bg-white transition-all shadow-[0_4px_20px_rgb(0,0,0,0.03)]" />
               </div>
               <div>
-                <input name="password" type="password" placeholder="비밀번호" required className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-4 py-4 text-slate-900 placeholder-slate-400 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary focus:bg-white transition-all shadow-sm" />
+                <input name="password" type="password" placeholder="비밀번호" required className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-5 py-4 text-slate-900 placeholder-slate-400 focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 focus:bg-white transition-all shadow-[0_4px_20px_rgb(0,0,0,0.03)]" />
               </div>
               
-              <button type="submit" disabled={isSubmitting} className="w-full mt-6 py-4 bg-primary hover:bg-primary-hover text-white rounded-2xl font-bold shadow-[0_8px_30px_rgb(168,85,247,0.2)] transition-transform active:scale-95 disabled:opacity-50 flex items-center justify-center">
+              <button type="submit" disabled={isSubmitting} className="w-full mt-8 py-4 bg-blue-600 hover:bg-blue-700 text-white rounded-2xl font-extrabold transition-transform active:scale-95 disabled:opacity-50 flex items-center justify-center shadow-sm">
                 {isSubmitting ? <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin"></div> : '로그인하고 시작하기'}
               </button>
             </form>
 
-            <div className="mt-8 text-sm text-slate-500 flex gap-4">
-              <button className="hover:text-slate-900 transition-colors font-medium">비밀번호 찾기</button>
+            <div className="mt-8 text-[13px] text-slate-500 flex justify-center gap-4">
+              <button className="hover:text-slate-900 transition-colors font-bold">비밀번호 찾기</button>
               <span className="text-slate-300">|</span>
-              <button onClick={() => setViewMode('snsSignup')} className="hover:text-primary transition-colors font-medium">회원가입</button>
+              <button onClick={() => setViewMode('snsSignup')} className="hover:text-blue-600 transition-colors font-bold">회원가입</button>
             </div>
           </>
         )}
@@ -174,9 +176,9 @@ export default function LoginPage() {
               이메일로 가입하기
             </button>
 
-            <div className="mt-8 text-sm text-slate-500 text-center">
+            <div className="mt-8 text-[13px] text-slate-500 text-center font-medium">
               이미 계정이 있으신가요?{' '}
-              <button onClick={() => setViewMode('login')} className="text-primary hover:text-primary-hover font-bold ml-1">
+              <button onClick={() => setViewMode('login')} className="text-blue-600 hover:text-blue-700 font-extrabold ml-1">
                 로그인
               </button>
             </div>

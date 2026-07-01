@@ -109,28 +109,54 @@ export default function DashboardPage() {
   const top2Jobs = recommendedJobs.slice(0, 2);
 
   return (
-    <main className="min-h-full pb-20 bg-slate-50 flex flex-col relative break-keep whitespace-pre-wrap">
-      <header className="px-6 pt-10 pb-8 bg-blue-950 rounded-b-3xl z-10 relative overflow-hidden mb-6 shadow-md">
-        <div className="absolute top-0 right-0 w-64 h-64 bg-blue-600/20 rounded-full filter blur-3xl -z-10 translate-x-1/3 -translate-y-1/3"></div>
+    <main className="min-h-full flex flex-col relative break-keep whitespace-pre-wrap bg-transparent">
+      {/* 상단 네이비 헤더 영역 */}
+      <header className="px-6 pt-12 pb-10 z-10 relative">
+        <div className="absolute top-0 right-0 w-64 h-64 bg-blue-600/20 rounded-full filter blur-[80px] -z-10 translate-x-1/3 -translate-y-1/3"></div>
         
-        {/* 디지털 뱃지 (커리어 네임택) */}
-        {userPersona && (
-          <div className="inline-flex items-center gap-1.5 bg-blue-600/30 text-blue-100 px-3 py-1.5 rounded-full text-xs font-bold mb-4 border border-blue-500/30 shadow-sm backdrop-blur-sm">
-            <Sparkles className="w-3.5 h-3.5 text-blue-300" strokeWidth={2.5} />
-            <span>{userPersona.name}</span>
+        {/* CAREER PASS (글래스모피즘 카드) */}
+        <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-[28px] p-6 text-white shadow-lg relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-blue-400/20 rounded-full filter blur-2xl translate-x-1/4 -translate-y-1/4 z-0"></div>
+          
+          <div className="relative z-10 flex items-start justify-between mb-6">
+            <div className="flex gap-4 items-center">
+              <div className="w-14 h-14 bg-white/10 rounded-[20px] flex items-center justify-center border border-white/20 shadow-inner">
+                <Sparkles className="w-7 h-7 text-white" strokeWidth={1.5} />
+              </div>
+              <div>
+                <p className="text-white/60 text-[11px] font-extrabold tracking-widest mb-1">CAREER PASS</p>
+                <h1 className="text-2xl font-extrabold tracking-tight">
+                  {userPersona ? userPersona.name : '당신을 위한'}
+                </h1>
+                <p className="text-blue-200 text-sm font-medium mt-0.5">
+                  {userPersona ? '나만의 커리어 트랙' : '직무 탐색 허브'}
+                </p>
+              </div>
+            </div>
+            
+            <div className="w-14 h-14 rounded-full bg-blue-600/40 border border-blue-400/30 flex items-center justify-center flex-col shadow-inner backdrop-blur-sm">
+              <span className="text-blue-200 text-[10px] font-bold leading-none mb-0.5">LV</span>
+              <span className="text-white text-xl font-black leading-none">12</span>
+            </div>
           </div>
-        )}
 
-        <h1 className="text-2xl font-extrabold text-white mb-2 tracking-tight leading-tight flex flex-col">
-          <span>당신을 위한</span>
-          <span>직무 탐색 허브</span>
-        </h1>
-        <p className="text-xs font-medium text-blue-200/80 leading-relaxed">
-          {userPersona ? '나의 커리어 성향에 꼭 맞는 직무와 로드맵을 확인하세요.' : '요즘 뜨는 직무부터 숨겨진 꿀 직무까지 탐색해보세요.'}
-        </p>
+          <div className="relative z-10">
+            <div className="flex justify-between items-end mb-2">
+              <div className="flex items-center gap-1.5">
+                <Flame className="w-4 h-4 text-blue-400" strokeWidth={2.5} />
+                <span className="text-blue-100 font-extrabold text-xs">EXP</span>
+              </div>
+              <span className="text-white/70 text-xs font-bold tracking-wide">640 <span className="text-white/40">/ 1000</span></span>
+            </div>
+            <div className="h-2.5 w-full bg-white/10 rounded-full overflow-hidden border border-white/10">
+              <div className="h-full bg-blue-500 w-[64%] rounded-full shadow-[0_0_10px_rgba(59,130,246,0.5)]"></div>
+            </div>
+          </div>
+        </div>
       </header>
 
-      <div className="flex-1 space-y-8">
+      {/* 하단 화이트 바디 영역 */}
+      <div className="flex-1 bg-white rounded-t-[32px] pt-10 pb-24 shadow-[0_-10px_40px_rgb(0,0,0,0.12)] space-y-10 relative z-20">
         {/* 1. 요새 뜨는 직업 (가로 스크롤) */}
         <section className="px-5">
           <div className="flex justify-between items-end mb-4">

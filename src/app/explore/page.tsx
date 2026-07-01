@@ -53,18 +53,20 @@ export default function ExplorePage() {
     : EXPLORE_JOBS.filter(job => job.category === activeCategory);
 
   return (
-    <main className="min-h-screen bg-slate-50 pb-20 flex flex-col relative break-keep whitespace-pre-wrap">
+    <main className="min-h-screen bg-transparent pb-20 flex flex-col relative break-keep whitespace-pre-wrap">
       {/* Header */}
-      <header className="sticky top-0 bg-white/80 backdrop-blur-md z-30 border-b border-slate-100 px-5 py-4 flex items-center justify-between">
-        <Link href="/dashboard" className="w-10 h-10 -ml-2 rounded-full flex items-center justify-center text-slate-700 hover:bg-slate-100 transition-colors">
+      <header className="sticky top-0 bg-[#111827] z-30 px-5 pt-6 pb-10 flex items-center justify-between">
+        <Link href="/dashboard" className="w-10 h-10 -ml-2 rounded-full flex items-center justify-center text-white/70 hover:bg-white/10 transition-colors">
           <ArrowLeft className="w-6 h-6" />
         </Link>
-        <h1 className="text-[17px] font-extrabold text-slate-900 tracking-tight">직업 탐구</h1>
+        <h1 className="text-[17px] font-extrabold text-white tracking-tight">직업 탐구</h1>
         <div className="w-10 h-10"></div> {/* Placeholder for centering */}
       </header>
 
-      {/* Tabs */}
-      <div className="bg-white px-5 pt-4 border-b border-slate-100 sticky top-[73px] z-20 relative">
+      {/* Body */}
+      <div className="flex-1 bg-white rounded-t-[32px] pt-4 shadow-[0_-10px_40px_rgb(0,0,0,0.12)] relative z-20 flex flex-col -mt-4">
+        {/* Tabs */}
+        <div className="bg-white px-5 pt-4 border-b border-slate-100 sticky top-0 z-20 rounded-t-[32px]">
         <div 
           className="flex gap-4 overflow-x-auto hide-scrollbar pb-3 pr-8"
           ref={scrollRefTabs}
@@ -117,7 +119,7 @@ export default function ExplorePage() {
               <button
                 key={job.id}
                 onClick={() => setSelectedJob(job)}
-                className="bg-white border border-slate-100 rounded-3xl p-5 flex flex-col items-start text-left transition-all hover:border-slate-200 hover:shadow-sm active:scale-[0.98] group"
+                className="bg-white border border-slate-100 rounded-3xl p-5 flex flex-col items-start text-left transition-all hover:border-slate-200 shadow-[0_4px_20px_rgb(0,0,0,0.03)] active:scale-[0.98] group"
               >
                 <div className={`w-10 h-10 rounded-2xl ${job.bgColor} ${job.color} flex items-center justify-center mb-4 group-hover:scale-110 transition-transform`}>
                   <IconComponent className="w-5 h-5" />
@@ -200,6 +202,7 @@ export default function ExplorePage() {
           </div>
         </div>
       )}
+      </div>
     </main>
   );
 }

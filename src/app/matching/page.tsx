@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { Handshake, MapPin, Target, Users, Calendar, ChevronDown } from 'lucide-react';
 
 const MATCHING_DATA = [
   {
@@ -39,62 +40,68 @@ export default function MatchingPage() {
   const [expandedId, setExpandedId] = useState<number | null>(null);
 
   return (
-    <main className="min-h-full pb-20 bg-slate-50 flex flex-col">
-      <header className="p-6 pb-4">
-        <h1 className="text-2xl font-bold text-slate-900 mb-2">체험학습 매칭 🤝</h1>
-        <p className="text-sm text-slate-500">기업의 리얼한 실무를 직접 경험하고 직무 적성을 확인하세요.</p>
+    <main className="min-h-full flex flex-col relative break-keep whitespace-pre-wrap bg-transparent">
+      {/* Header */}
+      <header className="pt-10 px-6 pb-12 bg-[#111827]">
+        <h1 className="text-xl font-extrabold text-white mb-2 tracking-tight flex items-center gap-2">
+          체험학습 매칭 <Handshake className="w-5 h-5 text-blue-400" strokeWidth={2.5} />
+        </h1>
+        <p className="text-[13px] font-medium text-slate-400">기업의 리얼한 실무를 직접 경험하고 직무 적성을 확인하세요.</p>
       </header>
 
-      <div className="px-6 space-y-4">
+      {/* Body */}
+      <div className="flex-1 bg-white rounded-t-[32px] p-6 pt-8 shadow-[0_-10px_40px_rgb(0,0,0,0.12)] -mt-6 z-20 flex flex-col pb-24 overflow-y-auto">
+      <div className="space-y-4">
         {MATCHING_DATA.map((item) => (
           <div 
             key={item.id} 
-            className="bg-white border border-slate-100 rounded-2xl overflow-hidden transition-all duration-300 shadow-lg"
+            className="bg-white border border-slate-100 rounded-3xl overflow-hidden transition-all duration-300 shadow-[0_4px_20px_rgb(0,0,0,0.03)]"
           >
             {/* 요약 카드 영역 (클릭 시 토글) */}
             <div 
               onClick={() => setExpandedId(expandedId === item.id ? null : item.id)}
-              className="p-5 cursor-pointer hover:bg-slate-700/50 transition-colors flex flex-col"
+              className="p-6 cursor-pointer hover:bg-slate-50 transition-colors flex flex-col"
             >
-              <div className="flex justify-between items-start mb-2">
-                <span className="text-primary font-bold text-sm bg-primary/10 px-2 py-0.5 rounded">{item.company}</span>
-                {item.isNew && <span className="text-xs bg-red-500 text-white font-bold px-2 py-0.5 rounded-full animate-pulse">NEW</span>}
+              <div className="flex justify-between items-start mb-3">
+                <span className="text-blue-600 font-extrabold text-[11px] bg-blue-50 px-2 py-0.5 rounded-md border border-blue-100">{item.company}</span>
+                {item.isNew && <span className="text-[10px] bg-red-50 text-red-500 font-extrabold px-2 py-0.5 rounded-md border border-red-100 animate-pulse">NEW</span>}
               </div>
-              <h3 className="text-lg font-bold text-slate-900 mb-1 line-clamp-2">{item.title}</h3>
-              <p className="text-xs text-slate-500 flex justify-between items-center mt-2">
-                <span>{item.period}</span>
-                <span className={`transform transition-transform duration-300 ${expandedId === item.id ? 'rotate-180' : ''}`}>▼</span>
+              <h3 className="text-[17px] font-extrabold text-slate-900 mb-2 line-clamp-2 leading-snug">{item.title}</h3>
+              <p className="text-[13px] text-slate-500 flex justify-between items-center mt-3 font-medium">
+                <span className="flex items-center gap-1"><Calendar className="w-4 h-4 text-slate-400"/> {item.period}</span>
+                <ChevronDown className={`w-5 h-5 text-slate-400 transform transition-transform duration-300 ${expandedId === item.id ? 'rotate-180' : ''}`} />
               </p>
             </div>
 
             {/* 상세 정보 영역 (확장 시 노출) */}
             <div 
-              className={`bg-slate-50 px-5 border-t border-slate-100/50 transition-all duration-300 ease-in-out overflow-hidden ${
-                expandedId === item.id ? 'max-h-[400px] py-5 opacity-100' : 'max-h-0 py-0 opacity-0'
+              className={`bg-slate-50 px-6 border-t border-slate-100 transition-all duration-300 ease-in-out overflow-hidden ${
+                expandedId === item.id ? 'max-h-[500px] py-6 opacity-100' : 'max-h-0 py-0 opacity-0'
               }`}
             >
-              <ul className="space-y-4 text-sm">
+              <ul className="space-y-5 text-sm">
                 <li>
-                  <span className="text-emerald-400 font-bold block mb-1">어떤 일?</span>
-                  <span className="text-slate-600">{item.task}</span>
+                  <span className="text-slate-500 font-extrabold text-xs flex items-center gap-1.5 mb-2"><Target className="w-4 h-4 text-blue-500"/> 어떤 일?</span>
+                  <span className="text-slate-700 font-medium leading-relaxed block bg-white p-4 rounded-2xl border border-slate-200/50">{item.task}</span>
                 </li>
                 <li className="grid grid-cols-2 gap-4">
                   <div>
-                    <span className="text-emerald-400 font-bold block mb-1">어떤 나이?</span>
-                    <span className="text-slate-600">{item.age}</span>
+                    <span className="text-slate-500 font-extrabold text-xs flex items-center gap-1.5 mb-2"><Users className="w-4 h-4 text-emerald-500"/> 어떤 나이?</span>
+                    <span className="text-slate-700 font-bold block bg-white p-3 rounded-2xl border border-slate-200/50 text-center">{item.age}</span>
                   </div>
                   <div>
-                    <span className="text-emerald-400 font-bold block mb-1">원하는 사람?</span>
-                    <span className="text-slate-600">{item.persona}</span>
+                    <span className="text-slate-500 font-extrabold text-xs flex items-center gap-1.5 mb-2"><MapPin className="w-4 h-4 text-purple-500"/> 원하는 사람?</span>
+                    <span className="text-slate-700 font-medium block bg-white p-3 rounded-2xl border border-slate-200/50 text-[13px] leading-snug">{item.persona}</span>
                   </div>
                 </li>
               </ul>
-              <button className="w-full mt-6 py-3 bg-primary hover:bg-primary-hover text-white font-bold rounded-xl transition-colors active:scale-95 shadow-lg shadow-primary/20">
+              <button className="w-full mt-8 py-3.5 bg-blue-600 hover:bg-blue-700 text-white font-extrabold rounded-2xl transition-colors active:scale-95 shadow-sm text-[15px]">
                 지원하기
               </button>
             </div>
           </div>
         ))}
+      </div>
       </div>
     </main>
   );
