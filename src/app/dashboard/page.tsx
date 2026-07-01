@@ -110,13 +110,22 @@ export default function DashboardPage() {
 
   return (
     <main className="min-h-full pb-20 bg-slate-50 flex flex-col relative break-keep whitespace-pre-wrap">
-      <header className="px-5 pt-8 pb-6 bg-white rounded-b-[2rem] shadow-sm border-b border-slate-100 z-10 relative overflow-hidden mb-6">
-        <div className="absolute top-0 right-0 w-64 h-64 bg-blue-600/5 rounded-full filter blur-3xl -z-10 translate-x-1/3 -translate-y-1/3"></div>
-        <h1 className="text-2xl font-extrabold text-slate-900 mb-2 tracking-tight leading-tight flex flex-col">
-          <span>{userPersona ? `${userPersona.name}님을 위한` : '당신을 위한'}</span>
+      <header className="px-6 pt-10 pb-8 bg-blue-950 rounded-b-3xl z-10 relative overflow-hidden mb-6 shadow-md">
+        <div className="absolute top-0 right-0 w-64 h-64 bg-blue-600/20 rounded-full filter blur-3xl -z-10 translate-x-1/3 -translate-y-1/3"></div>
+        
+        {/* 디지털 뱃지 (커리어 네임택) */}
+        {userPersona && (
+          <div className="inline-flex items-center gap-1.5 bg-blue-600/30 text-blue-100 px-3 py-1.5 rounded-full text-xs font-bold mb-4 border border-blue-500/30 shadow-sm backdrop-blur-sm">
+            <Sparkles className="w-3.5 h-3.5 text-blue-300" strokeWidth={2.5} />
+            <span>{userPersona.name}</span>
+          </div>
+        )}
+
+        <h1 className="text-2xl font-extrabold text-white mb-2 tracking-tight leading-tight flex flex-col">
+          <span>당신을 위한</span>
           <span>직무 탐색 허브</span>
         </h1>
-        <p className="text-xs font-medium text-slate-500 leading-relaxed">
+        <p className="text-xs font-medium text-blue-200/80 leading-relaxed">
           {userPersona ? '나의 커리어 성향에 꼭 맞는 직무와 로드맵을 확인하세요.' : '요즘 뜨는 직무부터 숨겨진 꿀 직무까지 탐색해보세요.'}
         </p>
       </header>
@@ -125,8 +134,10 @@ export default function DashboardPage() {
         {/* 1. 요새 뜨는 직업 (가로 스크롤) */}
         <section className="px-5">
           <div className="flex justify-between items-end mb-4">
-            <h2 className="text-slate-900 font-extrabold text-lg flex items-center gap-1.5">
-              <Flame className="w-5 h-5 text-orange-500" />
+            <h2 className="text-slate-900 font-extrabold text-lg flex items-center gap-2.5">
+              <div className="w-10 h-10 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center">
+                <Flame className="w-5 h-5" strokeWidth={2} />
+              </div>
               요새 뜨는 직업
             </h2>
             <Link href="/explore" className="text-xs font-bold text-slate-500 flex items-center gap-1 hover:text-blue-600 transition-colors">
@@ -136,7 +147,7 @@ export default function DashboardPage() {
           
           <div className="relative group">
             <div 
-              className="flex gap-3 overflow-x-auto pb-4 hide-scrollbar snap-x pr-12" 
+              className="flex gap-4 overflow-x-auto pb-4 hide-scrollbar snap-x px-6" 
               ref={scrollRefJobs}
               onScroll={(e) => handleScroll(e, setCanScrollLeftJobs, setCanScrollRightJobs)}
             >
@@ -144,12 +155,12 @@ export default function DashboardPage() {
                 <div 
                   key={idx} 
                   onClick={() => setSelectedJob(getJobInfo(job))}
-                  className="bg-white hover:bg-slate-50 border border-slate-100 transition-colors rounded-3xl p-5 w-[75%] max-w-[220px] snap-center flex-shrink-0 cursor-pointer relative shadow-sm"
+                  className="bg-white hover:bg-slate-50 border border-slate-100 transition-colors rounded-3xl p-6 w-[75%] max-w-[240px] snap-center flex-shrink-0 cursor-pointer relative shadow-[0_8px_30px_rgb(0,0,0,0.04)]"
                 >
                   <div className="absolute top-0 left-0 w-7 h-7 bg-blue-600 rounded-tl-3xl rounded-br-2xl flex items-center justify-center text-white font-bold text-xs shadow-sm">
                     {idx + 1}
                   </div>
-                  <TrendingUp className="w-7 h-7 text-blue-600 mb-2 mt-1" />
+                  <TrendingUp className="w-8 h-8 text-blue-600 mb-3 mt-1" strokeWidth={1.5} />
                   <h3 className="text-slate-900 font-extrabold text-[15px] tracking-tight mb-1">{job}</h3>
                 </div>
               ))}
@@ -157,10 +168,10 @@ export default function DashboardPage() {
             
             {/* 좌측 화살표 */}
             {canScrollLeftJobs && (
-              <div className="absolute left-0 top-0 bottom-4 w-12 flex items-center justify-start pointer-events-none z-10">
+              <div className="absolute left-4 top-0 bottom-4 w-12 flex items-center justify-start pointer-events-none z-10">
                 <button 
                   onClick={(e) => scrollLeft(scrollRefJobs, e)}
-                  className="w-8 h-8 bg-white/90 backdrop-blur-sm shadow-md rounded-full flex items-center justify-center text-slate-600 pointer-events-auto ml-1 hover:text-blue-600 transition-colors"
+                  className="w-10 h-10 bg-white/90 backdrop-blur-sm shadow-md rounded-full flex items-center justify-center text-slate-600 pointer-events-auto hover:text-blue-600 transition-colors"
                 >
                   <ChevronLeft className="w-5 h-5" />
                 </button>
@@ -168,10 +179,10 @@ export default function DashboardPage() {
             )}
             
             {/* 우측 그라데이션 및 화살표 */}
-            <div className={`absolute right-0 top-0 bottom-4 w-16 bg-gradient-to-l from-slate-50 via-slate-50/80 to-transparent flex items-center justify-end pointer-events-none z-10 transition-opacity ${canScrollRightJobs ? 'opacity-100' : 'opacity-0'}`}>
+            <div className={`absolute right-0 top-0 bottom-4 w-20 bg-gradient-to-l from-slate-50 via-slate-50/80 to-transparent flex items-center justify-end pointer-events-none z-10 transition-opacity ${canScrollRightJobs ? 'opacity-100' : 'opacity-0'}`}>
               <button 
                 onClick={(e) => scrollRight(scrollRefJobs, e)}
-                className="w-8 h-8 bg-white/90 backdrop-blur-sm shadow-md rounded-full flex items-center justify-center text-slate-600 pointer-events-auto mr-1 hover:text-blue-600 transition-colors"
+                className="w-10 h-10 bg-white/90 backdrop-blur-sm shadow-md rounded-full flex items-center justify-center text-slate-600 pointer-events-auto mr-4 hover:text-blue-600 transition-colors"
               >
                 <ChevronRight className="w-5 h-5" />
               </button>
@@ -196,16 +207,16 @@ export default function DashboardPage() {
             </button>
           </div>
 
-          <div className="space-y-2.5">
+          <div className="space-y-4">
             {activeCategory === 'recommended' && recommendedJobs.map((job: string) => (
               <button 
                 key={job} 
                 onClick={() => setSelectedJob(getJobInfo(job))}
-                className="w-full bg-white hover:bg-slate-50 border border-slate-100 rounded-2xl p-4 flex justify-between items-center transition-all shadow-sm active:scale-[0.98]"
+                className="w-full bg-white hover:bg-slate-50 border border-slate-100 rounded-3xl p-6 flex justify-between items-center transition-all shadow-[0_8px_30px_rgb(0,0,0,0.04)] active:scale-[0.98]"
               >
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 bg-emerald-50 rounded-full flex items-center justify-center text-emerald-600">
-                    <Sparkles className="w-4 h-4" />
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 bg-blue-50 rounded-full flex items-center justify-center text-blue-600">
+                    <Sparkles className="w-5 h-5" strokeWidth={2} />
                   </div>
                   <span className="text-slate-900 font-extrabold text-[15px]">{job}</span>
                 </div>
@@ -216,11 +227,11 @@ export default function DashboardPage() {
               <button 
                 key={job} 
                 onClick={() => setSelectedJob(getJobInfo(job))}
-                className="w-full bg-white hover:bg-slate-50 border border-slate-100 rounded-2xl p-4 flex justify-between items-center transition-all shadow-sm active:scale-[0.98]"
+                className="w-full bg-white hover:bg-slate-50 border border-slate-100 rounded-3xl p-6 flex justify-between items-center transition-all shadow-[0_8px_30px_rgb(0,0,0,0.04)] active:scale-[0.98]"
               >
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 bg-orange-50 rounded-full flex items-center justify-center text-orange-500">
-                    <Flame className="w-4 h-4" />
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 bg-blue-50 rounded-full flex items-center justify-center text-blue-600">
+                    <Flame className="w-5 h-5" strokeWidth={2} />
                   </div>
                   <span className="text-slate-900 font-extrabold text-[15px]">{job}</span>
                 </div>
@@ -232,13 +243,15 @@ export default function DashboardPage() {
 
         {/* 3. 현직자 리얼 VLOG (가로 스크롤) */}
         <section className="px-5">
-          <h2 className="text-slate-900 font-extrabold text-lg mb-4 flex items-center gap-1.5">
-            <Video className="w-5 h-5 text-indigo-500" />
+          <h2 className="text-slate-900 font-extrabold text-lg mb-4 flex items-center gap-2.5">
+            <div className="w-10 h-10 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center">
+              <Video className="w-5 h-5" strokeWidth={2} />
+            </div>
             현직자 리얼 VLOG
           </h2>
           <div className="relative group">
             <div 
-              className="flex gap-3 overflow-x-auto pb-4 snap-x hide-scrollbar pr-12" 
+              className="flex gap-4 overflow-x-auto pb-4 snap-x hide-scrollbar px-6" 
               ref={scrollRefVlogs}
               onScroll={(e) => handleScroll(e, setCanScrollLeftVlogs, setCanScrollRightVlogs)}
             >
@@ -252,7 +265,7 @@ export default function DashboardPage() {
                       window.open(vlog.videoUrl, '_blank');
                     }
                   }}
-                  className="w-[80%] max-w-[260px] h-40 bg-white rounded-3xl relative overflow-hidden flex-shrink-0 snap-center cursor-pointer border border-slate-100 shadow-sm flex items-center justify-center group/card"
+                  className="w-[80%] max-w-[260px] h-40 bg-white rounded-3xl relative overflow-hidden flex-shrink-0 snap-center cursor-pointer border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] flex items-center justify-center group/card"
                 >
                   {vlog.thumbnailUrl ? (
                     <img src={vlog.thumbnailUrl} alt={vlog.title} className="absolute inset-0 w-full h-full object-cover z-0 opacity-80 group-hover/card:scale-105 transition-transform duration-500" />
@@ -291,10 +304,10 @@ export default function DashboardPage() {
             
             {/* 좌측 화살표 */}
             {canScrollLeftVlogs && (
-              <div className="absolute left-0 top-0 bottom-4 w-12 flex items-center justify-start pointer-events-none z-10">
+              <div className="absolute left-4 top-0 bottom-4 w-12 flex items-center justify-start pointer-events-none z-10">
                 <button 
                   onClick={(e) => scrollLeft(scrollRefVlogs, e)}
-                  className="w-8 h-8 bg-white/90 backdrop-blur-sm shadow-md rounded-full flex items-center justify-center text-slate-600 pointer-events-auto ml-1 hover:text-blue-600 transition-colors"
+                  className="w-10 h-10 bg-white/90 backdrop-blur-sm shadow-md rounded-full flex items-center justify-center text-slate-600 pointer-events-auto hover:text-blue-600 transition-colors"
                 >
                   <ChevronLeft className="w-5 h-5" />
                 </button>
@@ -302,10 +315,10 @@ export default function DashboardPage() {
             )}
             
             {/* 우측 화살표 */}
-            <div className={`absolute right-0 top-0 bottom-4 w-16 bg-gradient-to-l from-slate-50 via-slate-50/80 to-transparent flex items-center justify-end pointer-events-none z-10 transition-opacity ${canScrollRightVlogs ? 'opacity-100' : 'opacity-0'}`}>
+            <div className={`absolute right-0 top-0 bottom-4 w-20 bg-gradient-to-l from-slate-50 via-slate-50/80 to-transparent flex items-center justify-end pointer-events-none z-10 transition-opacity ${canScrollRightVlogs ? 'opacity-100' : 'opacity-0'}`}>
               <button 
                 onClick={(e) => scrollRight(scrollRefVlogs, e)}
-                className="w-8 h-8 bg-white/90 backdrop-blur-sm shadow-md rounded-full flex items-center justify-center text-slate-600 pointer-events-auto mr-1 hover:text-blue-600 transition-colors"
+                className="w-10 h-10 bg-white/90 backdrop-blur-sm shadow-md rounded-full flex items-center justify-center text-slate-600 pointer-events-auto mr-4 hover:text-blue-600 transition-colors"
               >
                 <ChevronRight className="w-5 h-5" />
               </button>
@@ -315,16 +328,18 @@ export default function DashboardPage() {
 
         {/* 4. 시크릿 자격증 로드맵 (Accordion UI) - 동적 2개 렌더링 */}
         <section className="px-5 pb-8 space-y-6">
-          <h2 className="text-slate-900 font-extrabold text-lg mb-4 flex items-center gap-1.5">
-            <MapIcon className="w-5 h-5 text-emerald-500" />
+          <h2 className="text-slate-900 font-extrabold text-lg mb-4 flex items-center gap-2.5">
+            <div className="w-10 h-10 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center">
+              <MapIcon className="w-5 h-5" strokeWidth={2} />
+            </div>
             시크릿 합격 로드맵
           </h2>
           
           {top2Jobs.map((jobName: string, jobIdx: number) => {
             const steps = ROADMAP_DATA[jobName] || getDefaultRoadmap(jobName);
             return (
-              <div key={jobName} className="relative bg-white rounded-[2rem] border border-slate-100 overflow-hidden shadow-sm">
-                <div className={`p-5 ${!isSubscribed ? 'h-48 filter blur-[6px] opacity-40 overflow-hidden pointer-events-none' : ''}`}>
+              <div key={jobName} className="relative bg-white rounded-3xl border border-slate-100 overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
+                <div className={`p-6 ${!isSubscribed ? 'h-48 filter blur-[6px] opacity-40 overflow-hidden pointer-events-none' : ''}`}>
                   <h3 className="text-slate-900 font-extrabold mb-5 text-[15px] tracking-tight">
                     <span className="text-blue-600">[{jobName}]</span> 합격 커리큘럼
                   </h3>
