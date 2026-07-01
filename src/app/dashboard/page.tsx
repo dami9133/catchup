@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { Flame, TrendingUp, Sparkles, Video, Lock, Unlock, Map as MapIcon, Gem, ChevronRight, ChevronLeft, ChevronDown, PlayCircle, Building2, Clock, Link as LinkIcon, X, ArrowRight, Briefcase, BookOpen, Users, Rocket, Target, CheckCircle } from 'lucide-react';
+import { Flame, TrendingUp, Sparkles, Video, Lock, Unlock, Map as MapIcon, Gem, ChevronRight, ChevronLeft, ChevronDown, PlayCircle, Building2, Clock, Link as LinkIcon, X, ArrowRight, Briefcase, BookOpen, Users, Rocket, Target, CheckCircle, Camera } from 'lucide-react';
 import Link from 'next/link';
 
 type JobCategory = 'recommended' | 'popular';
@@ -17,6 +17,17 @@ export default function DashboardPage() {
   const [vlogs, setVlogs] = useState<any[]>([]);
   const [expandedStep, setExpandedStep] = useState<string | null>(null);
 
+  const [showQuestModal, setShowQuestModal] = useState(false);
+  const [selectedQuest, setSelectedQuest] = useState<any>(null);
+  const [uploadedFileName, setUploadedFileName] = useState<string | null>(null);
+  const [questExp, setQuestExp] = useState(640);
+  const [badgeProgress, setBadgeProgress] = useState([
+    { id: 'portfolio', name: '포트폴리오', count: 2, total: 5, icon: Briefcase, color: '#A855F7', bg: 'bg-purple-50' },
+    { id: 'learning', name: '직무 학습', count: 5, total: 5, icon: BookOpen, color: '#10B981', bg: 'bg-emerald-50' },
+    { id: 'networking', name: '네트워킹', count: 1, total: 5, icon: Users, color: '#3B82F6', bg: 'bg-blue-50' },
+    { id: 'experience', name: '실전 경험', count: 0, total: 5, icon: Rocket, color: '#EF4444', bg: 'bg-red-50' }
+  ]);
+
   const scrollRefJobs = useRef<HTMLDivElement>(null);
   const scrollRefVlogs = useRef<HTMLDivElement>(null);
   const scrollRefQuests = useRef<HTMLDivElement>(null);
@@ -27,6 +38,32 @@ export default function DashboardPage() {
   const [canScrollRightVlogs, setCanScrollRightVlogs] = useState(true);
   const [canScrollLeftQuests, setCanScrollLeftQuests] = useState(false);
   const [canScrollRightQuests, setCanScrollRightQuests] = useState(true);
+
+  const handleVerifySubmit = () => {
+    if (!uploadedFileName || !selectedQuest) {
+      alert('사진이나 관련 자료를 먼저 첨부해주세요!');
+      return;
+    }
+    
+    setQuestExp(prev => Math.min(prev + selectedQuest.exp, 1000));
+    
+    setBadgeProgress(prev => prev.map(badge => {
+      if (badge.id === selectedQuest.badgeId) {
+        return { ...badge, count: Math.min(badge.count + 1, badge.total) };
+      }
+      return badge;
+    }));
+    
+    setShowQuestModal(false);
+    setUploadedFileName(null);
+    setSelectedQuest(null);
+  };
+  
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      setUploadedFileName(e.target.files[0].name);
+    }
+  };
 
   const handleScroll = (e: React.UIEvent<HTMLDivElement>, setLeft: Function, setRight: Function) => {
     const { scrollLeft, scrollWidth, clientWidth } = e.currentTarget;
@@ -108,17 +145,26 @@ export default function DashboardPage() {
   const TRENDING_JOBS = ['데이터 분석가', 'AI 프롬프트 엔지니어', '그로스 해커', '콘텐츠 마케터', 'UX/UI 디자이너'];
 
   const TODAY_QUESTS = [
-    { id: 1, title: '관심 직무 1개 케이스 스터디 작성', category: '포트폴리오', exp: 120, icon: Briefcase, color: 'text-purple-500', bg: 'bg-purple-50' },
-    { id: 2, title: '현직자 멘토에게 질문 남기기', category: '네트워킹', exp: 80, icon: Users, color: 'text-blue-500', bg: 'bg-blue-50' },
-    { id: 3, title: '직무 관련 아티클 3개 읽기', category: '직무 학습', exp: 50, icon: BookOpen, color: 'text-emerald-500', bg: 'bg-emerald-50' },
-    { id: 4, title: '미니 인턴십 지원하기', category: '실전 경험', exp: 200, icon: Rocket, color: 'text-red-500', bg: 'bg-red-50' },
-  ];
-
-  const BADGE_PROGRESS = [
-    { id: 'portfolio', name: '포트폴리오', count: 2, total: 5, icon: Briefcase, color: '#A855F7' },
-    { id: 'learning', name: '직무 학습', count: 5, total: 5, icon: BookOpen, color: '#10B981' },
-    { id: 'networking', name: '네트워킹', count: 1, total: 5, icon: Users, color: '#3B82F6' },
-    { id: 'experience', name: '실전 경험', count: 0, total: 5, icon: Rocket, color: '#EF4444' }
+    { 
+      id: 1, title: '관심 직무 1개 케이스 스터디 작성', badgeId: 'portfolio', category: '포트폴리오', exp: 120, icon: Briefcase, color: 'text-purple-500', bg: 'bg-purple-50',
+      guide: '노션이나 블로그를 활용해 특정 프로덕트의 문제점과 개선 방안(문제 인식-해결 과정-결과)을 1장 분량으로 정리해 보세요.',
+      verifyMethod: '작성 완료된 노션 페이지 또는 블로그 캡쳐 이미지 첨부'
+    },
+    { 
+      id: 2, title: '현직자 멘토에게 질문 남기기', badgeId: 'networking', category: '네트워킹', exp: 80, icon: Users, color: 'text-blue-500', bg: 'bg-blue-50',
+      guide: '커뮤니티 탭 또는 링크드인을 통해 관심 직무의 현직자에게 정중하게 1가지 이상의 실무 관련 질문을 남겨보세요.',
+      verifyMethod: '메시지를 보낸 화면 캡쳐 첨부'
+    },
+    { 
+      id: 3, title: '직무 관련 아티클 3개 읽기', badgeId: 'learning', category: '직무 학습', exp: 50, icon: BookOpen, color: 'text-emerald-500', bg: 'bg-emerald-50',
+      guide: '요즘IT, 브런치 등에서 본인 직무와 관련된 아티클 3개를 골라 읽고 가장 인상 깊은 한 줄을 기록해 보세요.',
+      verifyMethod: '읽은 아티클의 제목 리스트 또는 캡쳐 이미지 첨부'
+    },
+    { 
+      id: 4, title: '미니 인턴십 지원하기', badgeId: 'experience', category: '실전 경험', exp: 200, icon: Rocket, color: 'text-red-500', bg: 'bg-red-50',
+      guide: '기업 연계 미니 인턴십 공고를 하나 찾아서, 해당 직무에 맞는 이력서를 제출하고 실무 과제에 도전해 보세요.',
+      verifyMethod: '지원 완료 메일 또는 지원 내역 화면 캡쳐 첨부'
+    },
   ];
   
   const recommendedJobs = userPersona?.jobs || ['콘텐츠 마케터', '그로스 해커'];
@@ -164,10 +210,10 @@ export default function DashboardPage() {
                 <Flame className="w-4 h-4 text-blue-400" strokeWidth={2.5} />
                 <span className="text-blue-100 font-extrabold text-xs">EXP</span>
               </div>
-              <span className="text-white/70 text-xs font-bold tracking-wide">640 <span className="text-white/40">/ 1000</span></span>
+              <span className="text-white/70 text-xs font-bold tracking-wide">{questExp} <span className="text-white/40">/ 1000</span></span>
             </div>
             <div className="h-2.5 w-full bg-white/10 rounded-full overflow-hidden border border-white/10">
-              <div className="h-full bg-blue-500 w-[64%] rounded-full shadow-[0_0_10px_rgba(59,130,246,0.5)]"></div>
+              <div className="h-full bg-blue-500 rounded-full shadow-[0_0_10px_rgba(59,130,246,0.5)] transition-all duration-500" style={{ width: `${(questExp / 1000) * 100}%` }}></div>
             </div>
           </div>
 
@@ -175,7 +221,7 @@ export default function DashboardPage() {
           <div className="relative z-10 border-t border-white/10 pt-4 flex items-center justify-between">
             <span className="text-white/60 text-[10px] font-extrabold tracking-wide">획득 뱃지</span>
             <div className="flex gap-2.5">
-              {BADGE_PROGRESS.map((badge) => {
+              {badgeProgress.map((badge) => {
                 const isCompleted = badge.count === badge.total;
                 const isStarted = badge.count > 0;
                 const radius = 14;
@@ -288,6 +334,9 @@ export default function DashboardPage() {
               </div>
               오늘의 직무 퀘스트
             </h2>
+            <button className="text-xs font-bold text-slate-500 flex items-center gap-1 hover:text-blue-600 transition-colors">
+              전체보기 <ArrowRight className="w-3.5 h-3.5" />
+            </button>
           </div>
           
           <div className="relative group">
@@ -301,6 +350,7 @@ export default function DashboardPage() {
                 return (
                   <div 
                     key={quest.id} 
+                    onClick={() => { setSelectedQuest(quest); setShowQuestModal(true); }}
                     className="bg-white hover:border-slate-300 border border-slate-100 transition-colors rounded-[24px] p-5 w-[75%] max-w-[260px] snap-center flex-shrink-0 cursor-pointer relative shadow-[0_4px_20px_rgb(0,0,0,0.03)] flex flex-col justify-between active:scale-[0.98]"
                   >
                     <div>
@@ -612,6 +662,80 @@ export default function DashboardPage() {
           </div>
         </div>
       )}
+      {/* 퀘스트 인증 모달 */}
+      {showQuestModal && selectedQuest && (
+        <div className="fixed inset-0 z-[100] flex flex-col justify-end p-0 bg-slate-900/60 backdrop-blur-sm sm:items-center sm:justify-center sm:p-4">
+          <div className="bg-white rounded-t-[32px] sm:rounded-[2rem] w-full max-w-md p-6 sm:p-8 relative shadow-2xl animate-in slide-in-from-bottom-full duration-300 sm:slide-in-from-bottom-0 sm:fade-in sm:zoom-in max-h-[90vh] overflow-y-auto">
+            <button 
+              onClick={() => { setShowQuestModal(false); setUploadedFileName(null); setSelectedQuest(null); }} 
+              className="absolute top-6 right-6 text-slate-400 hover:text-slate-900 bg-slate-50 w-8 h-8 flex items-center justify-center rounded-full transition-colors"
+            >
+              <X className="w-4 h-4"/>
+            </button>
+            
+            <div className="mb-6 pr-8">
+              <div className="flex items-center gap-2 mb-3">
+                <span className={`px-2.5 py-1 ${selectedQuest.bg} ${selectedQuest.color} text-[11px] font-extrabold rounded-md border border-white/20 flex items-center gap-1`}>
+                  <selectedQuest.icon className="w-3.5 h-3.5" strokeWidth={2.5} />
+                  {selectedQuest.category}
+                </span>
+                <span className="text-blue-600 font-black text-sm">+{selectedQuest.exp} EXP</span>
+              </div>
+              <h2 className="text-xl font-extrabold text-slate-900 tracking-tight leading-snug">{selectedQuest.title}</h2>
+            </div>
+
+            <div className="space-y-6 mb-8">
+              {/* 수행 가이드 */}
+              <div className="bg-slate-50 rounded-2xl p-5 border border-slate-100">
+                <h3 className="text-slate-900 font-extrabold text-sm mb-2 flex items-center gap-1.5">
+                  <BookOpen className="w-4 h-4 text-slate-600" /> 이렇게 수행해보세요!
+                </h3>
+                <p className="text-sm text-slate-600 leading-relaxed font-medium">
+                  {selectedQuest.guide}
+                </p>
+              </div>
+
+              {/* 인증 방법 */}
+              <div className="bg-blue-50/50 rounded-2xl p-5 border border-blue-100/50">
+                <h3 className="text-blue-900 font-extrabold text-sm mb-2 flex items-center gap-1.5">
+                  <CheckCircle className="w-4 h-4 text-blue-600" /> 인증 방법
+                </h3>
+                <p className="text-sm text-blue-700/80 leading-relaxed font-medium">
+                  {selectedQuest.verifyMethod}
+                </p>
+              </div>
+            </div>
+            
+            {/* 파일 업로드 영역 */}
+            <label className="border-2 border-dashed border-slate-200 rounded-3xl p-8 mb-6 flex flex-col items-center justify-center text-slate-500 hover:bg-slate-50 hover:border-blue-400 transition-colors cursor-pointer relative overflow-hidden group bg-white">
+              <input type="file" accept="image/*" className="absolute inset-0 opacity-0 cursor-pointer w-full h-full" onChange={handleFileChange} />
+              
+              {uploadedFileName ? (
+                <>
+                  <CheckCircle className="w-10 h-10 text-emerald-500 mb-3" strokeWidth={2} />
+                  <span className="text-slate-900 font-bold text-center break-all text-[13px] px-2">{uploadedFileName}</span>
+                  <span className="text-[11px] font-bold text-slate-400 mt-2">클릭하여 다른 파일 선택</span>
+                </>
+              ) : (
+                <>
+                  <Camera className="w-10 h-10 text-slate-300 mb-3 group-hover:scale-110 transition-transform" strokeWidth={1.5} />
+                  <span className="text-[14px] font-bold text-slate-600">인증 사진 첨부하기</span>
+                  <span className="text-[11px] font-medium text-slate-400 mt-1">탭하여 사진 선택</span>
+                </>
+              )}
+            </label>
+
+            <button 
+              onClick={handleVerifySubmit}
+              className={`w-full py-4 font-extrabold rounded-2xl transition-all shadow-sm active:scale-95 text-[15px] ${uploadedFileName ? 'bg-blue-600 hover:bg-blue-700 text-white shadow-blue-500/20' : 'bg-slate-100 text-slate-400 cursor-not-allowed'}`}
+              disabled={!uploadedFileName}
+            >
+              업로드 완료 및 보상받기
+            </button>
+          </div>
+        </div>
+      )}
+
     </main>
   );
 }
